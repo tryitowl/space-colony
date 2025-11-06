@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GameConfig, GameConfigType, mergeConfig } from '../../config/gameConfig';
+import { GameConfig, type GameConfigType, mergeConfig } from '../../config/gameConfig';
 import { GlassPanel } from '../ui/GlassPanel';
 import { Button } from '../ui/Button';
 import { Switch } from '../ui/Switch';
@@ -341,7 +341,6 @@ export const ConfigurationManager: React.FC<ConfigurationManagerProps> = ({ onCl
                 className="hidden"
               />
               <Button
-                as="span"
                 variant="glass"
                 size="sm"
                 className="flex items-center"

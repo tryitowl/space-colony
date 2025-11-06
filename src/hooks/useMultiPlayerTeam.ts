@@ -370,7 +370,7 @@ export function useMultiPlayerTeam({
       throw new Error('Only captain can update roles');
     }
     
-    const { GameService } = await import('../services/gameService');
+    const { GameService } = await import('../services/GameService');
     await GameService.updatePlayerRole(
       sessionId,
       teamId,
@@ -385,7 +385,7 @@ export function useMultiPlayerTeam({
       throw new Error('Only captain can remove players');
     }
     
-    const { GameService } = await import('../services/gameService');
+    const { GameService } = await import('../services/GameService');
     await GameService.removePlayerFromTeam(
       sessionId,
       teamId,

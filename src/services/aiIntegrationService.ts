@@ -1,6 +1,6 @@
 import { AIColonyService } from './aiColonyService';
 import { AIStrategyService } from './aiStrategyService';
-import { GameService } from './gameService';
+import { GameService } from './GameService';
 import type { GameSession, Colony } from '../types';
 import type { 
   AIColonyConfig, 
@@ -44,7 +44,7 @@ export class AIIntegrationService {
       }
 
       // Check if this is a multi-galaxy session
-      const isMultiGalaxy = galaxyConfig && galaxyConfig.galaxies.length > 1;
+      const isMultiGalaxy = galaxyConfig && galaxyConfig.galaxies && galaxyConfig.galaxies.length > 1;
 
       if (isMultiGalaxy && galaxyConfig) {
         // Initialize per-galaxy AI configurations

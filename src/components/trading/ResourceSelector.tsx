@@ -61,7 +61,7 @@ export const ResourceSelector: React.FC<ResourceSelectorProps> = ({
       const key = resourceKey as keyof Resources;
       const currentValue = resources[key];
       if (typeof currentValue === 'number') {
-        newResources[key] = amount;
+        (newResources[key] as number) = amount;
       }
     }
     

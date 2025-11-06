@@ -333,23 +333,23 @@ export type IntelKey = KeysOfType<Resources, IntelItem[]>;
  * Type predicate for checking if a key is a resource key
  */
 export function isResourceKey(key: string): key is ResourceKey {
-  const resourceKeys: ResourceKey[] = [
+  const resourceKeys = [
     'oxygen', 'food', 'water', 'energy',
     'minerals', 'alloys', 'techComponents',
     'defenseContracts', 'systemRepairs', 'transportRoutes',
     'techPatents', 'blueprints', 'alienTech',
     'xenoBio', 'quantumCores', 'darkMatter',
     'credits'
-  ];
-  return resourceKeys.includes(key as ResourceKey);
+  ] as const;
+  return resourceKeys.includes(key as any);
 }
 
 /**
  * Type predicate for checking if a key is an intel key
  */
 export function isIntelKey(key: string): key is IntelKey {
-  const intelKeys: IntelKey[] = ['marketIntel', 'surveyReports', 'crisisWarnings'];
-  return intelKeys.includes(key as IntelKey);
+  const intelKeys = ['marketIntel', 'surveyReports', 'crisisWarnings', 'intel'] as const;
+  return intelKeys.includes(key as any);
 }
 
 /**

@@ -30,7 +30,7 @@ import type {
 /**
  * Enhanced session service with galaxy support
  */
-class SessionService {
+export class SessionService {
   private sessionListeners: Map<string, Unsubscribe> = new Map();
 
   /**

@@ -282,14 +282,34 @@ export const CounterOfferModal: React.FC<CounterOfferModalProps> = ({
               {tradingMode === 'resources' ? (
                 <ResourceSelector
                   resources={{
-                    // For request mode, use centralized max values
-                    ...MAX_TRADE_REQUEST_VALUES,
+                    // Basic Resources
+                    oxygen: MAX_TRADE_REQUEST_VALUES.oxygen || 50,
+                    food: MAX_TRADE_REQUEST_VALUES.food || 50,
+                    water: MAX_TRADE_REQUEST_VALUES.water || 50,
+                    energy: MAX_TRADE_REQUEST_VALUES.energy || 50,
+                    // Advanced Materials
+                    minerals: MAX_TRADE_REQUEST_VALUES.minerals || 30,
+                    alloys: MAX_TRADE_REQUEST_VALUES.alloys || 20,
+                    techComponents: MAX_TRADE_REQUEST_VALUES.techComponents || 15,
+                    // Services
+                    defenseContracts: MAX_TRADE_REQUEST_VALUES.defenseContracts || 10,
+                    systemRepairs: MAX_TRADE_REQUEST_VALUES.systemRepairs || 10,
+                    transportRoutes: MAX_TRADE_REQUEST_VALUES.transportRoutes || 10,
+                    // Technology
+                    techPatents: MAX_TRADE_REQUEST_VALUES.techPatents || 5,
+                    blueprints: MAX_TRADE_REQUEST_VALUES.blueprints || 5,
+                    alienTech: MAX_TRADE_REQUEST_VALUES.alienTech || 2,
+                    // Alien Resources
+                    xenoBio: 10,
+                    quantumCores: 5,
+                    darkMatter: 3,
+                    // Universal
+                    credits: MAX_TRADE_REQUEST_VALUES.credits || 1000,
                     // Intel arrays stay empty as they're handled separately
                     marketIntel: [],
                     surveyReports: [],
-                    crisisWarnings: [],
-                    intel: []
-                  } as Resources}
+                    crisisWarnings: []
+                  }}
                   selectedResources={counterRequestResources}
                   onResourceChange={setCounterRequestResources}
                   mode="request"

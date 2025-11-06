@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import type { GameSession, Colony, TradeOffer, Resources, Investments } from '../types';
-import { GameService } from '../services/gameService';
+import { GameService } from '../services/GameService';
 import { TradingService } from '../services/tradingService';
 import { GameEngineService } from '../services/gameEngineService';
 import { RoundService } from '../services/roundService';
@@ -480,12 +480,10 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     }
 
     try {
-      const result = await resourceServiceRef.current.purchaseInvestment(teamId, investmentType, amount);
-      
+      await resourceServiceRef.current.purchaseInvestment(teamId, investmentType, amount);
+
       // Refresh session to get updated team data
       await refreshSession();
-      
-      return result;
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to purchase investment' });
       throw error;

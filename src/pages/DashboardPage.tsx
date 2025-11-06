@@ -372,6 +372,7 @@ const DashboardContent: React.FC = () => {
           <TradeNotifications
             sessionId={session.id}
             teamId={currentTeam.id}
+            currentTeam={currentTeam}
             onTradeAction={handleTradeCreated}
           />
         </div>

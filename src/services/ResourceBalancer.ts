@@ -1,4 +1,4 @@
-import { TeamDefinition } from '../types';
+import type { TeamDefinition } from '../types';
 
 export type BalanceMode = 'none' | 'light' | 'moderate' | 'aggressive' | 'heavy';
 
@@ -71,7 +71,8 @@ export class ResourceBalancer {
       'research': 1.3,
       'trade_hub': 1.15,
       'manufacturing': 1.25,
-      'energy': 1.1
+      'energy': 1.1,
+      'military': 1.2
     }[team.colonyType] || 1.0;
     
     return baseValue * typeMultiplier;

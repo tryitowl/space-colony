@@ -405,7 +405,7 @@ export class EventSystemService {
       round,
       timestamp: Date.now(),
       duration: template.baseDuration * severityMultiplier,
-      effects: template.effects.map(effect => ({
+      effects: template.effects.map((effect: CrisisEffect) => ({
         ...effect,
         duration: effect.duration * severityMultiplier,
         parameters: {
@@ -413,7 +413,7 @@ export class EventSystemService {
           drainRate: (effect.parameters.drainRate || 1) * severityMultiplier
         }
       })),
-      resolutionOptions: template.resolutionOptions.map(option => ({
+      resolutionOptions: template.resolutionOptions.map((option: CrisisResolution) => ({
         ...option,
         requirements: this.scaleRequirements(option.requirements, severityMultiplier)
       })),
@@ -700,9 +700,11 @@ export class EventSystemService {
           hasInsufficientResources = true;
           console.warn(`Team ${teamId} has insufficient ${resource}: ${currentAmount} < ${deductAmount}`);
         }
-        
-        // Deduct but don't go below 0
-        updatedResources[resource as keyof Resources] = Math.max(0, currentAmount - deductAmount);
+
+        // Deduct but don't go below 0 (only for numeric resources)
+        if (typeof currentAmount === 'number') {
+          (updatedResources[resource as keyof Resources] as number) = Math.max(0, currentAmount - deductAmount);
+        }
       }
       
       // Update team resources
@@ -712,7 +714,7 @@ export class EventSystemService {
       await this.logGameEvent({
         id: `resource_deduct_${teamId}_${Date.now()}`,
         timestamp: Date.now(),
-        type: 'resource',
+        type: 'event',
         message: `Resources deducted from ${team.name}`,
         data: {
           teamId,
@@ -768,11 +770,15 @@ export class EventSystemService {
     // Apply drain to all affected teams
     for (const teamId of crisisEvent.affectedTeams) {
       const drainResources: Partial<Resources> = {};
-      
+
       for (const resourceType of resourceTypes) {
-        drainResources[resourceType] = drainRate;
+        // Only apply drain rate to numeric resource types
+        const isNumericResource = !['marketIntel', 'surveyReports', 'crisisWarnings', 'intel'].includes(resourceType);
+        if (isNumericResource) {
+          (drainResources[resourceType] as number) = drainRate;
+        }
       }
-      
+
       await this.deductResources(teamId, drainResources);
     }
     
@@ -790,7 +796,11 @@ export class EventSystemService {
         for (const teamId of crisisEvent.affectedTeams) {
           const drainResources: Partial<Resources> = {};
           for (const resourceType of resourceTypes) {
-            drainResources[resourceType] = drainRate;
+            // Only apply drain rate to numeric resource types
+            const isNumericResource = !['marketIntel', 'surveyReports', 'crisisWarnings', 'intel'].includes(resourceType);
+            if (isNumericResource) {
+              (drainResources[resourceType] as number) = drainRate;
+            }
           }
           await this.deductResources(teamId, drainResources);
         }

@@ -114,7 +114,7 @@ export const IntelTemplateManager: React.FC<IntelTemplateManagerProps> = ({ onCl
                 Export Templates
               </Button>
               <label className="cursor-pointer">
-                <Button variant="glass" size="sm" as="span">
+                <Button variant="glass" size="sm">
                   Import Templates
                 </Button>
                 <input

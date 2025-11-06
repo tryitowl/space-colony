@@ -24,7 +24,8 @@ import type {
   VictoryCondition,
   EnhancedColony,
 } from '../types/galaxy.types';
-import type { GameSession } from '../types/base.types';
+import { validateGalaxyConfig } from '../types/galaxy.types';
+import type { GameSession } from '../types';
 
 /**
  * Service for managing session-galaxy relationships and multi-galaxy coordination
@@ -50,8 +51,9 @@ class SessionGalaxyService {
     const galaxyMappings: GalaxyCodeMapping[] = [];
     const batch = writeBatch(db);
 
-    for (let i = 0; i < galaxyConfiguration.galaxies.length; i++) {
-      const galaxyConfig = galaxyConfiguration.galaxies[i];
+    for (let i = 0; i < (galaxyConfiguration.galaxies?.length ?? 0); i++) {
+      const galaxyConfig = galaxyConfiguration.galaxies?.[i];
+      if (!galaxyConfig) continue;
       
       // Create galaxy
       const galaxy = await galaxyService.createGalaxy(sessionId, galaxyConfig, i);
@@ -275,7 +277,7 @@ class SessionGalaxyService {
         break;
       
       case 'conditional':
-        targetGalaxyIds = config.galaxies
+        targetGalaxyIds = (config.galaxies ?? [])
           .filter(target.condition)
           .map(g => g.id);
         break;
@@ -447,7 +449,7 @@ class SessionGalaxyService {
           break;
 
         case 'gameplay_modifier':
-          if (eventConfig && eventConfig.affectedActions?.includes(action)) {
+          if (rule.config && rule.config.affectedActions?.includes(action)) {
             // Apply modifier logic
           }
           break;

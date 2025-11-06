@@ -699,7 +699,8 @@ class TeamDataService {
 
       let minSurvivalRounds = Infinity;
       Object.entries(consumptionRates).forEach(([resource, rate]) => {
-        const available = team.resources[resource as keyof Resources] || 0;
+        const resourceValue = team.resources[resource as keyof Resources];
+        const available = typeof resourceValue === 'number' ? resourceValue : 0;
         const rounds = Math.floor(available / rate);
         minSurvivalRounds = Math.min(minSurvivalRounds, rounds);
       });
@@ -720,9 +721,10 @@ class TeamDataService {
       }, 0);
 
       // Count critical resources
-      const criticalResourceCount = ['oxygen', 'food', 'water', 'energy'].filter(resource => 
-        (team.resources[resource as keyof Resources] || 0) < 5
-      ).length;
+      const criticalResourceCount = ['oxygen', 'food', 'water', 'energy'].filter(resource => {
+        const value = team.resources[resource as keyof Resources];
+        return typeof value === 'number' && value < 5;
+      }).length;
 
       return {
         survivalRounds: Math.max(0, minSurvivalRounds),

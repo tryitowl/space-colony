@@ -362,7 +362,7 @@ _galaxyContext?: { totalTeams: number; galaxyTheme?: string }
         socialPreference: 'selective',
         grudgeHolding: 'balanced',
         reciprocity: 'conditional',
-        resourceStrategy: 'specialist',
+        resourceStrategy: 'balanced',
         specialization: 'specialist',
         quirks: []
       }
@@ -768,11 +768,11 @@ _galaxyContext?: { totalTeams: number; galaxyTheme?: string }
     let tradeCount = 0;
     
     recentTrades.forEach(trade => {
-      const offeredValue = Object.values(trade.offered).reduce((sum, val) => 
+      const offeredValue = Object.values(trade.offered).reduce((sum: number, val) =>
         sum + (typeof val === 'number' ? val : 0), 0);
-      const receivedValue = Object.values(trade.received).reduce((sum, val) => 
+      const receivedValue = Object.values(trade.received).reduce((sum: number, val) =>
         sum + (typeof val === 'number' ? val : 0), 0);
-      
+
       totalTradeValue += (offeredValue + receivedValue) / 2;
       tradeCount++;
     });

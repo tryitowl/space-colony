@@ -1,14 +1,15 @@
-import { 
-  doc, 
-  setDoc, 
-  updateDoc, 
+import {
+  doc,
+  setDoc,
+  updateDoc,
   getDocs,
   collection,
   query,
   arrayUnion,
   writeBatch,
   serverTimestamp,
-  runTransaction
+  runTransaction,
+  Transaction
 } from 'firebase/firestore';
 import { ref, set, push } from 'firebase/database';
 import { firestore, realtimeDb } from '../firebase/config';
@@ -452,7 +453,7 @@ export class IntelGenerationService {
       await AuthService.ensureAuthenticated();
       
       // Use transaction to ensure atomic transfer
-      await firestore.runTransaction(async (transaction) => {
+      await runTransaction(firestore, async (transaction: Transaction) => {
         // Get both teams
         const fromTeamRef = doc(firestore, 'sessions', sessionId, 'teams', fromTeamId);
         const toTeamRef = doc(firestore, 'sessions', sessionId, 'teams', toTeamId);

@@ -5,37 +5,37 @@
  * based on game configuration and runtime requirements
  */
 
-import { GameService } from './gameService';
+import { GameService } from './GameService';
 import FlexibleGameService from './flexibleGameService';
 import { TradingService } from './tradingService';
 import FlexibleTradingService from './flexibleTradingService';
-import { SessionService } from './sessionService';
+import { SessionService, sessionService } from './sessionService';
 import FlexibleSessionService from './flexibleSessionService';
 import { galaxyService } from './galaxyService';
 import { sessionGalaxyService } from './sessionGalaxyService';
 import { TeamGenerationService } from './teamGenerationService';
 import { sessionCodeService } from './sessionCodeService';
 import { configurationValidationService } from './configurationValidationService';
-import { analyticsService } from './analyticsService';
-import { scoringService } from './scoringService';
+import { AnalyticsService, analyticsService } from './analyticsService';
+import { ScoringService, scoringService } from './scoringService';
 import FlexibleScoringService from './flexibleScoringService';
 import { notificationService } from './notificationService';
 import FlexibleNotificationService from './flexibleNotificationService';
 import { AuthService } from './authService';
-import { adminAuthService } from './adminAuthService';
+import { AdminAuthService, adminAuthService } from './adminAuthService';
 import { AIColonyService } from './aiColonyService';
 import { AIIntegrationService } from './aiIntegrationService';
 import { AIStrategyService } from './aiStrategyService';
-import { alienTradingService } from './alienTradingService';
-import { eventSystemService } from './eventSystemService';
-import { gameEngineService } from './gameEngineService';
+import { AlienTradingService, alienTradingService } from './alienTradingService';
+import { EventSystemService, eventSystemService } from './eventSystemService';
+import { GameEngineService, gameEngineService } from './gameEngineService';
 import { intelGenerationService } from './intelGenerationService';
-import { investmentService } from './investmentService';
-import { marketFluctuationService } from './marketFluctuationService';
-import { resourceManagementService } from './resourceManagementService';
-import { roleService } from './roleService';
-import { roundService } from './roundService';
-import { tradeAnalyticsService } from './tradeAnalyticsService';
+import { InvestmentService, investmentService } from './investmentService';
+import { MarketFluctuationService, marketFluctuationService } from './marketFluctuationService';
+import { ResourceManagementService, resourceManagementService } from './resourceManagementService';
+import { RoleService, roleService } from './roleService';
+import { RoundService, roundService } from './roundService';
+import { TradeAnalyticsService, tradeAnalyticsService } from './tradeAnalyticsService';
 
 /**
  * Service configuration options

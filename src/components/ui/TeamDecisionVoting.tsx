@@ -135,7 +135,7 @@ export const TeamDecisionVoting: React.FC<TeamDecisionVotingProps> = ({
               <div className="text-cyan-400 font-medium">We Give:</div>
               {Object.entries(trade.offerResources).map(([resource, amount]) => (
                 <div key={resource} className="text-gray-300">
-                  {resource}: {amount}
+                  {resource}: {typeof amount === 'number' ? amount : `${amount.length} items`}
                 </div>
               ))}
             </div>
@@ -143,7 +143,7 @@ export const TeamDecisionVoting: React.FC<TeamDecisionVotingProps> = ({
               <div className="text-green-400 font-medium">We Receive:</div>
               {Object.entries(trade.requestResources).map(([resource, amount]) => (
                 <div key={resource} className="text-gray-300">
-                  {resource}: {amount}
+                  {resource}: {typeof amount === 'number' ? amount : `${amount.length} items`}
                 </div>
               ))}
             </div>

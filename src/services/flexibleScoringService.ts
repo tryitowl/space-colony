@@ -17,7 +17,7 @@ import {
   limit
 } from 'firebase/firestore';
 import { firestore } from '../firebase/config';
-import { scoringService } from './scoringService';
+import { ScoringService } from './scoringService';
 import FlexibleGameService from './flexibleGameService';
 import { galaxyService } from './galaxyService';
 import type { Colony, Resources } from '../types';
@@ -83,7 +83,7 @@ interface CrossGalaxyLeaderboard {
   };
 }
 
-export default class FlexibleScoringService extends scoringService {
+export default class FlexibleScoringService extends ScoringService {
   /**
    * Calculate comprehensive score for a team in a galaxy
    */

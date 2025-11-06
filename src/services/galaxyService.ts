@@ -168,13 +168,13 @@ class GalaxyService {
     }
 
     // Validate assignments
-    if (teamAssignments.length > galaxy.totalTeams) {
+    if (teamAssignments.length > (galaxy.totalTeams ?? 0)) {
       throw new Error(`Cannot assign ${teamAssignments.length} teams to galaxy with capacity ${galaxy.totalTeams}`);
     }
 
     // Validate colony types
     for (const assignment of teamAssignments) {
-      if (!galaxy.colonyTypes.includes(assignment.colonyType)) {
+      if (!galaxy.colonyTypes?.includes(assignment.colonyType)) {
         throw new Error(`Colony type ${assignment.colonyType} not available in this galaxy`);
       }
     }
@@ -386,23 +386,23 @@ class GalaxyService {
   private validateGalaxy(galaxy: Galaxy): void {
     const errors: string[] = [];
 
-    if (galaxy.totalTeams < 2 || galaxy.totalTeams > 12) {
+    if ((galaxy.totalTeams ?? 0) < 2 || (galaxy.totalTeams ?? 0) > 12) {
       errors.push('Total teams must be between 2 and 12');
     }
 
-    if (galaxy.colonyTypes.length === 0) {
+    if ((galaxy.colonyTypes?.length ?? 0) === 0) {
       errors.push('At least one colony type must be specified');
     }
 
-    if (galaxy.colonyTypes.length > galaxy.totalTeams) {
+    if ((galaxy.colonyTypes?.length ?? 0) > (galaxy.totalTeams ?? 0)) {
       errors.push('Cannot have more colony types than teams');
     }
 
-    if (galaxy.teamStructure.mode === 'custom' && !galaxy.teamStructure.customAssignments) {
+    if (galaxy.teamStructure?.mode === 'custom' && !galaxy.teamStructure?.customAssignments) {
       errors.push('Custom mode requires team assignments');
     }
 
-    if (galaxy.teamStructure.mode === 'standard' && galaxy.colonyTypes.length !== galaxy.totalTeams) {
+    if (galaxy.teamStructure?.mode === 'standard' && (galaxy.colonyTypes?.length ?? 0) !== (galaxy.totalTeams ?? 0)) {
       errors.push('Standard mode requires one colony type per team');
     }
 

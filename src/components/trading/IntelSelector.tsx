@@ -104,7 +104,7 @@ export const IntelSelector: React.FC<IntelSelectorProps> = ({
           
           <div className="space-y-2">
             {intelList.map((intel) => {
-              const currentValue = calculateIntelValue(intel);
+              const currentValue = IntelGenerationService.calculateIntelValue(intel, currentRound);
               const selected = isSelected(intel);
               const canSelect = !selected && selectedIntel.length < maxSelections;
               
@@ -205,8 +205,8 @@ export const IntelSelector: React.FC<IntelSelectorProps> = ({
               {selectedIntel.map((intel) => (
                 <div key={intel.id} className="flex justify-between items-center text-xs">
                   <span className="text-white">{intel.title}</span>
-                  <span className={cn("font-mono font-bold", getIntelValueColor(calculateIntelValue(intel)))}>
-                    {calculateIntelValue(intel)} pts
+                  <span className={cn("font-mono font-bold", getIntelValueColor(IntelGenerationService.calculateIntelValue(intel, currentRound)))}>
+                    {IntelGenerationService.calculateIntelValue(intel, currentRound)} pts
                   </span>
                 </div>
               ))}
@@ -215,7 +215,7 @@ export const IntelSelector: React.FC<IntelSelectorProps> = ({
               <div className="flex justify-between items-center text-sm">
                 <span className="text-space-text-secondary">Total Intel Value:</span>
                 <span className="font-bold text-space-cyan">
-                  {selectedIntel.reduce((sum, intel) => sum + calculateIntelValue(intel), 0)} pts
+                  {selectedIntel.reduce((sum, intel) => sum + IntelGenerationService.calculateIntelValue(intel, currentRound), 0)} pts
                 </span>
               </div>
             </div>

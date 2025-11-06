@@ -316,8 +316,8 @@ export class AlienTradingService {
     // Check if team has sufficient resources
     Object.entries(trade.offeredResources).forEach(([resource, amount]) => {
       const teamAmount = team.resources[resource as keyof Resources];
-      if (typeof teamAmount === 'number' && teamAmount < (amount || 0)) {
-        throw new Error(`Insufficient ${resource}: need ${amount}, have ${typeof teamAmount === 'number' ? teamAmount : 0}`);
+      if (typeof teamAmount === 'number' && typeof amount === 'number' && teamAmount < amount) {
+        throw new Error(`Insufficient ${resource}: need ${amount}, have ${teamAmount}`);
       }
     });
 

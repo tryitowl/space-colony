@@ -1,12 +1,16 @@
 /**
  * Services Index
- * 
+ *
  * Central export file for all services with proper organization
  * between standard and flexible implementations
  */
 
+// Import types and classes for internal use
+import { ServiceFactory, type ServiceConfig } from './serviceFactory';
+import { ServiceLocator } from './serviceRegistry';
+
 // Core Game Services
-export { GameService } from './gameService';
+export { GameService } from './GameService';
 export { default as FlexibleGameService } from './flexibleGameService';
 
 // Trading Services
@@ -14,11 +18,11 @@ export { TradingService } from './tradingService';
 export { default as FlexibleTradingService } from './flexibleTradingService';
 
 // Session Management Services
-export { default as SessionService } from './sessionService';
+export { SessionService, sessionService } from './sessionService';
 export { default as FlexibleSessionService } from './flexibleSessionService';
 
 // Scoring Services
-export { scoringService } from './scoringService';
+export { ScoringService } from './scoringService';
 export { default as FlexibleScoringService } from './flexibleScoringService';
 
 // Notification Services
@@ -34,35 +38,35 @@ export { configurationValidationService } from './configurationValidationService
 
 // Authentication Services
 export { AuthService } from './authService';
-export { adminAuthService } from './adminAuthService';
+export { AdminAuthService } from './adminAuthService';
 
 // Analytics and Intelligence Services
-export { analyticsService } from './analyticsService';
+export { AnalyticsService } from './analyticsService';
 export { intelGenerationService } from './intelGenerationService';
 export { IntelGenerationService } from './intelGenerationService';
 // Legacy alias for backward compatibility
 export { intelGenerationService as intelService } from './intelGenerationService';
 
 // AI Services
-export { aiColonyService } from './aiColonyService';
-export { aiIntegrationService } from './aiIntegrationService';
-export { aiStrategyService } from './aiStrategyService';
+export { AIColonyService } from './aiColonyService';
+export { AIIntegrationService } from './aiIntegrationService';
+export { AIStrategyService } from './aiStrategyService';
 
 // Game Engine Services
-export { gameEngineService } from './gameEngineService';
-export { eventSystemService } from './eventSystemService';
-export { roundService } from './roundService';
-export { investmentService } from './investmentService';
-export { resourceManagementService } from './resourceManagementService';
-export { marketFluctuationService } from './marketFluctuationService';
+export { GameEngineService } from './gameEngineService';
+export { EventSystemService } from './eventSystemService';
+export { RoundService } from './roundService';
+export { InvestmentService } from './investmentService';
+export { ResourceManagementService } from './resourceManagementService';
+export { MarketFluctuationService } from './marketFluctuationService';
 
 // Trading and Commerce Services
-export { alienTradingService } from './alienTradingService';
-export { tradeAnalyticsService } from './tradeAnalyticsService';
+export { AlienTradingService } from './alienTradingService';
+export { TradeAnalyticsService } from './tradeAnalyticsService';
 
 // Utility Services
-export { roleService } from './roleService';
-export { analyticsExportService } from './analyticsExportService';
+export { RoleService } from './roleService';
+export { AnalyticsExportService } from './analyticsExportService';
 
 // Service Factory and Registry
 export { 

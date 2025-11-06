@@ -511,6 +511,9 @@ export const validateGalaxyConfig = (config: GalaxyConfiguration): string[] => {
   if (config.tradingRules?.crossGalaxyTrading && config.galaxies && config.galaxies.length < 2) {
     errors.push('Cross-galaxy trading requires at least 2 galaxies');
   }
-  
+
   return errors;
 };
+
+// Re-export team types for convenience
+export type { TeamAllocationConfig } from './team.types';

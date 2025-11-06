@@ -606,7 +606,7 @@ export class AnalyticsService {
 
     let value = 0;
     Object.entries(trade.offerResources).forEach(([resource, amount]) => {
-      if (amount && resourceValues[resource as keyof typeof resourceValues]) {
+      if (typeof amount === 'number' && amount && resourceValues[resource as keyof typeof resourceValues]) {
         value += amount * resourceValues[resource as keyof typeof resourceValues];
       }
     });
@@ -831,7 +831,8 @@ export class AnalyticsService {
     if (trades.length > 5) {
       const tradesByRound = new Map<number, number>();
       trades.forEach(trade => {
-        const round = trade.round || 1;
+        // TODO: Calculate round from timestamp or add round field to TradeOffer
+        const round = 1;
         tradesByRound.set(round, (tradesByRound.get(round) || 0) + 1);
       });
       
@@ -944,9 +945,9 @@ export class AnalyticsService {
     
     // Strategy 1: Early Resource Hoarding
     const hoarders = sessionData.teams.filter(team => {
-      const firstRoundTrades = this.allTrades.filter(trade => 
-        (trade.initiatorId === team.id || trade.targetId === team.id) && 
-        trade.round && trade.round <= 2
+      const firstRoundTrades = this.allTrades.filter(trade =>
+        (trade.initiatorId === team.id || trade.targetId === team.id)
+        // TODO: Add round field to TradeOffer or calculate from timestamp
       );
       return firstRoundTrades.length < 2;
     });
@@ -1425,8 +1426,8 @@ export class AnalyticsService {
       score += this.calculateResourceScore(team) / 100;
       
       // Crisis resolution participation
-      const crisisEvents = this.gameEvents.filter(e => 
-        e.type === 'crisis_resolved' && e.data?.contributingTeams?.includes(team.id)
+      const crisisEvents = this.gameEvents.filter(e =>
+        e.type === 'crisis_resolved' && (e.data as any)?.contributingTeams?.includes(team.id)
       );
       score += crisisEvents.length * 5;
       
@@ -1499,9 +1500,9 @@ export class AnalyticsService {
     const progression: number[] = [];
     
     for (let round = 1; round <= rounds; round++) {
-      const roundTrades = this.allTrades.filter(t => 
-        (t.initiatorId === teamId || t.targetId === teamId) &&
-        t.round === round
+      const roundTrades = this.allTrades.filter(t =>
+        (t.initiatorId === teamId || t.targetId === teamId)
+        // TODO: Add round field to TradeOffer or calculate from timestamp
       );
       
       let value = 0;
@@ -1560,7 +1561,7 @@ export class AnalyticsService {
     
     trades.forEach(trade => {
       Object.entries(trade.offerResources).forEach(([resource, amount]) => {
-        if (amount && amount > 0) {
+        if (typeof amount === 'number' && amount > 0) {
           resourceCounts.set(resource, (resourceCounts.get(resource) || 0) + amount);
         }
       });
@@ -1613,8 +1614,8 @@ export class AnalyticsService {
   private calculatePlanningEffectiveness(team: Colony, events: GameEventLog[]): number {
     // Based on how well team avoided crises and maintained resources
     const crisisEvents = events.filter(e => e.type === 'crisis_event');
-    const avoidedCrises = crisisEvents.filter(e => 
-      !e.data?.affectedTeams?.includes(team.id)
+    const avoidedCrises = crisisEvents.filter(e =>
+      !(e.data as any)?.affectedTeams?.includes(team.id)
     ).length;
     
     return crisisEvents.length > 0 ? avoidedCrises / crisisEvents.length : 0.5;

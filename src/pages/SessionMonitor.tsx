@@ -7,7 +7,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { ArrowLeft, Users, Activity, TrendingUp, AlertCircle } from 'lucide-react';
-import { GameService } from '../services/gameService';
+import { GameService } from '../services/GameService';
 import type { GameSession, Colony } from '../types';
 
 const SessionMonitorContent: React.FC = () => {
@@ -93,7 +93,7 @@ const SessionMonitorContent: React.FC = () => {
               <div className="flex items-center gap-4">
                 <Button
                   onClick={() => navigate('/facilitator')}
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />

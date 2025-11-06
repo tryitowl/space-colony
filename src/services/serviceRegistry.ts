@@ -5,7 +5,7 @@
  * a clean interface for dependency injection and service resolution
  */
 
-import { ServiceFactory, ServiceConfig, ServiceInstances } from './serviceFactory';
+import { ServiceFactory, type ServiceConfig, type ServiceInstances } from './serviceFactory';
 
 export class ServiceRegistry {
   private static instance: ServiceRegistry;

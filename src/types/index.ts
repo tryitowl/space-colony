@@ -251,6 +251,9 @@ export * from './player.types';
 // Export type guards and utilities
 export * from './guards.types';
 
+// Export game engine types
+export * from './gameEngine';
+
 // Starting resources for each colony type
 export const COLONY_STARTING_RESOURCES: Record<ColonyType, Resources> = {
   mining: {

@@ -5,7 +5,7 @@ import { Button } from '../components/ui/Button';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { ModernLayout } from '../components/ui/ModernLayout';
 import { AdminAuthService } from '../services/adminAuthService';
-import { GameService } from '../services/gameService';
+import { GameService } from '../services/GameService';
 import { RoleService } from '../services/roleService';
 import { AIConfiguration } from '../components/admin/AIConfiguration';
 import { GalaxyManagementDashboard } from '../components/admin/GalaxyManagementDashboard';

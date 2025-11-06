@@ -135,7 +135,7 @@ export const GalaxyConfigurationForm: React.FC<GalaxyConfigurationFormProps> = (
       
       // Set victory conditions from template
       if (config.victoryConditions && config.victoryConditions.length > 0) {
-        setSelectedVictoryConditions(config.victoryConditions.map(vc => vc.id));
+        setSelectedVictoryConditions(config.victoryConditions);
       }
     }
   };

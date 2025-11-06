@@ -20,7 +20,7 @@ import {
 } from 'firebase/firestore';
 import { ref, set, onValue, off } from 'firebase/database';
 import { firestore, realtimeDb } from '../firebase/config';
-import { GameService } from './gameService';
+import { GameService } from './GameService';
 import { galaxyService } from './galaxyService';
 import { TeamGenerationService } from './teamGenerationService';
 import { sessionCodeService } from './sessionCodeService';
@@ -87,8 +87,9 @@ export class FlexibleGameService extends GameService {
     
     // Create galaxies
     const galaxies: Galaxy[] = [];
-    for (let i = 0; i < galaxyConfiguration.galaxies.length; i++) {
-      const galaxyConfig = galaxyConfiguration.galaxies[i];
+    for (let i = 0; i < (galaxyConfiguration.galaxies?.length ?? 0); i++) {
+      const galaxyConfig = galaxyConfiguration.galaxies?.[i];
+      if (!galaxyConfig) continue;
       const galaxy = await galaxyService.createGalaxy(sessionId, galaxyConfig, i);
       galaxies.push(galaxy);
     }
@@ -639,7 +640,7 @@ export class FlexibleGameService extends GameService {
     // Validate new configuration
     const validationResult = await configurationValidationService.validateFullConfiguration(galaxyConfiguration);
     if (!validationResult.valid) {
-      throw new Error(`Invalid configuration: ${validationResult.errors.map(e => e.message).join(', ')}`);
+      throw new Error(`Invalid configuration: ${validationResult.errors.map((e: import('../types/validation.types').ValidationError) => e.message).join(', ')}`);
     }
 
     // Create default galaxy for existing teams

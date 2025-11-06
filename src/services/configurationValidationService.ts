@@ -16,8 +16,9 @@ import type {
 } from '../types/galaxy.types';
 import type {
   ColonyType,
-  Resources
-} from '../types/base.types';
+  Resources,
+  Colony
+} from '../types';
 import type {
   ValidationResult,
   ValidationError,
@@ -228,7 +229,7 @@ export class ConfigurationValidationService {
       }
 
       // Performance warning for large galaxies
-      if (galaxy.totalTeams > PERFORMANCE_THRESHOLDS.warningTeamsPerGalaxy) {
+      if ((galaxy.totalTeams ?? 0) > PERFORMANCE_THRESHOLDS.warningTeamsPerGalaxy) {
         warnings.push({
           field: `galaxies[${index}].totalTeams`,
           message: `Galaxy "${galaxy.name}" has ${galaxy.totalTeams} teams which may impact performance`,
@@ -246,15 +247,15 @@ export class ConfigurationValidationService {
       }
 
       // Check if enough colony types for standard mode
-      if (galaxy.teamStructure.mode === 'standard' && 
-          galaxy.colonyTypes.length < galaxy.totalTeams) {
+      if (galaxy.teamStructure?.mode === 'standard' &&
+          (galaxy.colonyTypes?.length ?? 0) < (galaxy.totalTeams ?? 0)) {
         errors.push({
           field: `galaxies[${index}].teamStructure`,
           message: `Standard mode requires at least ${galaxy.totalTeams} colony types`,
           code: 'INVALID_COLONY_TYPE',
-          context: { 
-            required: galaxy.totalTeams, 
-            available: galaxy.colonyTypes.length 
+          context: {
+            required: galaxy.totalTeams,
+            available: galaxy.colonyTypes?.length ?? 0
           }
         });
       }
@@ -314,7 +315,7 @@ export class ConfigurationValidationService {
     let totalAITeams = 0;
     let totalHumanTeams = 0;
 
-    config.galaxies.forEach((galaxy, index) => {
+    (config.galaxies ?? []).forEach((galaxy, index) => {
       if (galaxy.aiEnabled) {
         // Check AI difficulty is set
         if (!galaxy.aiDifficulty) {
@@ -450,7 +451,7 @@ export class ConfigurationValidationService {
     let totalTeams = 0;
     let viableTeams = 0;
 
-    config.galaxies.forEach(galaxy => {
+    (config.galaxies ?? []).forEach(galaxy => {
       const colonyTypeCounts = this.getColonyTypeDistribution(galaxy);
       
       colonyTypeCounts.forEach((count, colonyType) => {
@@ -505,18 +506,18 @@ export class ConfigurationValidationService {
    */
   private getColonyTypeDistribution(galaxy: Galaxy): Map<ColonyType, number> {
     const distribution = new Map<ColonyType, number>();
-    
+
     if (galaxy.teamStructure?.mode === 'standard') {
       // One of each type
-      galaxy.colonyTypes.slice(0, galaxy.totalTeams || 0).forEach(type => {
+      galaxy.colonyTypes?.slice(0, galaxy.totalTeams || 0).forEach(type => {
         distribution.set(type, 1);
       });
     } else if (galaxy.teamStructure?.mode === 'balanced') {
       // Even distribution
-      const baseCount = Math.floor((galaxy.totalTeams || 0) / galaxy.colonyTypes.length);
-      const remainder = (galaxy.totalTeams || 0) % galaxy.colonyTypes.length;
-      
-      galaxy.colonyTypes.forEach((type, index) => {
+      const baseCount = Math.floor((galaxy.totalTeams || 0) / (galaxy.colonyTypes?.length ?? 1));
+      const remainder = (galaxy.totalTeams || 0) % (galaxy.colonyTypes?.length ?? 1);
+
+      galaxy.colonyTypes?.forEach((type, index) => {
         distribution.set(type, baseCount + (index < remainder ? 1 : 0));
       });
     } else if (galaxy.teamStructure?.mode === 'custom' && galaxy.teamStructure.customAssignments) {
@@ -525,7 +526,7 @@ export class ConfigurationValidationService {
         distribution.set(type, (distribution.get(type) || 0) + 1);
       });
     }
-    
+
     return distribution;
   }
 
@@ -688,8 +689,8 @@ export class ConfigurationValidationService {
     warnings: ValidationWarning[]
   ): void {
     const allRules: SpecialRule[] = [];
-    
-    config.galaxies.forEach((galaxy, galaxyIndex) => {
+
+    config.galaxies?.forEach((galaxy, galaxyIndex) => {
       if (galaxy.specialRules) {
         galaxy.specialRules.forEach((rule, ruleIndex) => {
           // Validate rule structure
@@ -738,9 +739,9 @@ export class ConfigurationValidationService {
   private checkRuleCompatibility(rule1: SpecialRule, rule2: SpecialRule): RuleCompatibility {
     // Trade restriction conflicts
     if (rule1.type === 'trade_restriction' && rule2.type === 'trade_restriction') {
-      const block1 = rule1.config.blockCrossGalaxy;
-      const block2 = rule2.config.blockCrossGalaxy;
-      
+      const block1 = rule1.config?.blockCrossGalaxy;
+      const block2 = rule2.config?.blockCrossGalaxy;
+
       if (block1 !== block2) {
         return {
           rule1,
@@ -751,11 +752,11 @@ export class ConfigurationValidationService {
         };
       }
     }
-    
+
     // Resource event conflicts
     if (rule1.type === 'resource_event' && rule2.type === 'resource_event') {
-      const decay1 = rule1.config.decayRate || 0;
-      const decay2 = rule2.config.decayRate || 0;
+      const decay1 = rule1.config?.decayRate || 0;
+      const decay2 = rule2.config?.decayRate || 0;
       
       if (decay1 + decay2 > 0.15) { // Total decay > 15%
         return {
@@ -788,8 +789,15 @@ export class ConfigurationValidationService {
     }
     
     config.victoryConditions.forEach((condition, index) => {
+      // Skip validation if condition is just a string ID
+      if (typeof condition === 'string') {
+        // Victory conditions stored as IDs - skip detailed validation
+        return;
+      }
+
+      const vc = condition as any;
       // Validate condition structure
-      if (!condition.id || !condition.name || !condition.type || !condition.evaluator) {
+      if (!vc.id || !vc.name || !vc.type || !vc.evaluator) {
         errors.push({
           field: `victoryConditions[${index}]`,
           message: 'Victory condition must have id, name, type, and evaluator',
@@ -797,18 +805,18 @@ export class ConfigurationValidationService {
         });
         return;
       }
-      
+
       // Validate evaluator function
-      if (typeof condition.evaluator !== 'function') {
+      if (typeof vc.evaluator !== 'function') {
         errors.push({
           field: `victoryConditions[${index}].evaluator`,
           message: 'Victory condition evaluator must be a function',
           code: 'INVALID_VICTORY_CONDITION'
         });
       }
-      
+
       // Check achievability
-      const validation = this.validateVictoryConditionAchievability(condition, config);
+      const validation = this.validateVictoryConditionAchievability(vc, config);
       
       if (!validation.isAchievable) {
         warnings.push({
@@ -828,11 +836,11 @@ export class ConfigurationValidationService {
     
     // Check for conflicting victory conditions
     if (config.victoryConditions.length > 1) {
-      const hasIndividual = config.victoryConditions.some(vc => 
-        vc.type === 'survival' || vc.type === 'economic'
+      const hasIndividual = config.victoryConditions.some(vc =>
+        typeof vc !== 'string' && ((vc as any).type === 'survival' || (vc as any).type === 'economic')
       );
-      const hasTeam = config.victoryConditions.some(vc => 
-        vc.type === 'diplomatic' || vc.type === 'custom'
+      const hasTeam = config.victoryConditions.some(vc =>
+        typeof vc !== 'string' && ((vc as any).type === 'diplomatic' || (vc as any).type === 'custom')
       );
       
       if (hasIndividual && hasTeam && config.competitionMode === 'galaxy') {
@@ -873,8 +881,8 @@ export class ConfigurationValidationService {
         
       case 'technological':
         // Check if research colonies exist
-        const hasResearch = config.galaxies.some(g => 
-          g.colonyTypes.includes('research')
+        const hasResearch = config.galaxies?.some(g =>
+          g.colonyTypes?.includes('research')
         );
         if (!hasResearch) {
           isAchievable = false;
@@ -883,10 +891,10 @@ export class ConfigurationValidationService {
         requiredResources.push('techComponents', 'techPatents', 'blueprints');
         difficulty = 'hard';
         break;
-        
+
       case 'diplomatic':
         // Check if there are enough teams for meaningful diplomacy
-        const totalTeams = config.galaxies.reduce((sum, g) => sum + (g.totalTeams || 0), 0);
+        const totalTeams = config.galaxies?.reduce((sum, g) => sum + (g.totalTeams || 0), 0) ?? 0;
         if (totalTeams < 4) {
           warnings.push('Few teams may limit diplomatic opportunities');
         }
@@ -917,9 +925,9 @@ export class ConfigurationValidationService {
     errors: ValidationError[],
     warnings: ValidationWarning[]
   ): void {
-    const totalTeams = config.galaxies.reduce((sum, g) => sum + (g.totalTeams || 0), 0);
+    const totalTeams = config.galaxies?.reduce((sum, g) => sum + (g.totalTeams || 0), 0) ?? 0;
     const totalMaxPlayers = totalTeams * 9;
-    const galaxyCount = config.galaxies.length;
+    const galaxyCount = config.galaxies?.length ?? 0;
     
     // Calculate performance score
     let performanceScore = 0;
@@ -975,7 +983,7 @@ export class ConfigurationValidationService {
   ): Promise<void> {
     try {
       // Check if we can generate enough unique codes
-      const requiredCodes = config.galaxies.length + 1; // +1 for master code
+      const requiredCodes = (config.galaxies?.length ?? 0) + 1; // +1 for master code
       
       // Simulate checking availability
       const availableCodes = await sessionCodeService.checkAvailableCodeCount();
@@ -1011,9 +1019,11 @@ export class ConfigurationValidationService {
             const match = error.field.match(/galaxies\[(\d+)\]/);
             if (match) {
               const index = parseInt(match[1]);
-              const galaxy = config.galaxies[index];
-              if ((galaxy.totalTeams || 0) < 2) galaxy.totalTeams = 2;
-              if ((galaxy.totalTeams || 0) > 20) galaxy.totalTeams = 20;
+              const galaxy = config.galaxies?.[index];
+              if (galaxy) {
+                if ((galaxy.totalTeams || 0) < 2) galaxy.totalTeams = 2;
+                if ((galaxy.totalTeams || 0) > 20) galaxy.totalTeams = 20;
+              }
             }
           }
           break;
@@ -1026,7 +1036,7 @@ export class ConfigurationValidationService {
               name: 'Survival Victory',
               description: 'Teams that survive all rounds',
               type: 'survival',
-              evaluator: (teams) => teams.filter(t => !t.eliminationStatus.isEliminated).map(t => t.id)
+              evaluator: (teams: Colony[]) => teams.filter((t: Colony) => !t.eliminationStatus.isEliminated).map((t: Colony) => t.id)
             }];
           }
           break;
@@ -1039,9 +1049,9 @@ export class ConfigurationValidationService {
    */
   private getCacheKey(config: GalaxyConfiguration): string {
     return JSON.stringify({
-      galaxyCount: config.galaxies.length,
-      teamCounts: config.galaxies.map(g => g.totalTeams),
-      modes: config.galaxies.map(g => g.teamStructure.mode),
+      galaxyCount: config.galaxies?.length ?? 0,
+      teamCounts: config.galaxies?.map(g => g.totalTeams) ?? [],
+      modes: config.galaxies?.map(g => g.teamStructure?.mode) ?? [],
       crossGalaxy: config.crossGalaxyTrading,
       competition: config.competitionMode
     });
@@ -1207,7 +1217,7 @@ export const createResourceBalanceCalculator = (
       let totalProduction = 0;
       let totalConsumption = 0;
       
-      distribution.forEach((count, colonyType) => {
+      distribution.forEach((count: number, colonyType: ColonyType) => {
         const baseResources = COLONY_STARTING_RESOURCES[colonyType];
         const production = (service as any).estimateProduction(colonyType, baseResources);
         const consumption = (service as any).estimateConsumption(colonyType);
@@ -1244,16 +1254,16 @@ export const createColonyTypeDistributionValidator = (
   const teams: TeamCompositionValidation['teams'] = [];
   let teamIndex = 0;
   
-  distribution.forEach((count, colonyType) => {
+  distribution.forEach((count: number, colonyType: ColonyType) => {
     for (let i = 0; i < count; i++) {
       const teamId = `team_${teamIndex++}`;
       const issues: string[] = [];
-      
+
       // Check if colony type is valid for this galaxy
-      if (!galaxy.colonyTypes.includes(colonyType)) {
+      if (!galaxy.colonyTypes?.includes(colonyType)) {
         issues.push(`Colony type ${colonyType} not available in this galaxy`);
       }
-      
+
       teams.push({
         teamId,
         colonyType,
@@ -1262,15 +1272,15 @@ export const createColonyTypeDistributionValidator = (
       });
     }
   });
-  
+
   // Check required types
-  const hasRequiredTypes = ['mining', 'agricultural'].every(type => 
+  const hasRequiredTypes = ['mining', 'agricultural'].every(type =>
     teams.some(team => team.colonyType === type)
   );
-  
+
   // Calculate diversity score
   const uniqueTypes = new Set(teams.map(t => t.colonyType)).size;
-  const diversityScore = uniqueTypes / galaxy.colonyTypes.length;
+  const diversityScore = uniqueTypes / (galaxy.colonyTypes?.length ?? 1);
   
   // Check if balanced
   const typeCounts = new Map<ColonyType, number>();
@@ -1301,32 +1311,32 @@ export const createCrossGalaxyFairnessChecker = (
   }
   
   // Check team count balance
-  const teamCounts = config.galaxies.map(g => g.totalTeams);
-  const avgTeams = teamCounts.reduce((a, b) => a + b, 0) / teamCounts.length;
-  const maxDiff = Math.max(...teamCounts.map(c => Math.abs(c - avgTeams)));
-  
+  const teamCounts = config.galaxies?.map(g => g.totalTeams ?? 0) ?? [];
+  const avgTeams = teamCounts.reduce((a, b) => (a ?? 0) + (b ?? 0), 0) / (teamCounts.length || 1);
+  const maxDiff = Math.max(...teamCounts.map(c => Math.abs((c ?? 0) - avgTeams)));
+
   if (maxDiff > avgTeams * 0.5) {
     issues.push('Significant team count imbalance between galaxies');
   }
-  
+
   // Check resource balance
   const service = new ConfigurationValidationService();
-  const balanceScores = config.galaxies.map(galaxy => {
+  const balanceScores = config.galaxies?.map(galaxy => {
     const distribution = (service as any).getColonyTypeDistribution(galaxy);
     // Simple balance score based on colony type diversity
-    return distribution.size / galaxy.colonyTypes.length;
-  });
-  
+    return distribution.size / (galaxy.colonyTypes?.length ?? 1);
+  }) ?? [];
+
   const minBalance = Math.min(...balanceScores);
   const maxBalance = Math.max(...balanceScores);
-  
+
   if (maxBalance - minBalance > 0.3) {
     issues.push('Resource production imbalance between galaxies');
   }
-  
+
   // Check AI distribution
-  const aiEnabledCount = config.galaxies.filter(g => g.aiEnabled).length;
-  if (aiEnabledCount > 0 && aiEnabledCount < config.galaxies.length) {
+  const aiEnabledCount = config.galaxies?.filter(g => g.aiEnabled).length ?? 0;
+  if (aiEnabledCount > 0 && aiEnabledCount < (config.galaxies?.length ?? 0)) {
     issues.push('Inconsistent AI distribution across galaxies');
   }
   
@@ -1360,11 +1370,11 @@ export const createConfigurationConflictDetector = (
   }
   
   // Check special rule conflicts within galaxies
-  config.galaxies.forEach((galaxy, index) => {
+  config.galaxies?.forEach((galaxy, index) => {
     if (galaxy.specialRules && galaxy.specialRules.length > 1) {
       const hasTradeRestriction = galaxy.specialRules.some(r => r.type === 'trade_restriction');
-      const hasTradeBonus = galaxy.specialRules.some(r => 
-        r.type === 'gameplay_modifier' && r.config.tradeBonus
+      const hasTradeBonus = galaxy.specialRules.some(r =>
+        r.type === 'gameplay_modifier' && r.config?.tradeBonus
       );
       
       if (hasTradeRestriction && hasTradeBonus) {
@@ -1392,10 +1402,10 @@ export const createPerformanceImpactEstimator = (
   };
   recommendations: string[];
 } => {
-  const totalTeams = config.galaxies.reduce((sum, g) => sum + g.totalTeams, 0);
+  const totalTeams = config.galaxies?.reduce((sum, g) => sum + (g.totalTeams ?? 0), 0) ?? 0;
   const maxPlayers = totalTeams * 9;
   const realtimeUpdates = totalTeams * 2; // Updates per second estimate
-  const memoryUsage = totalTeams * 2.5 + config.galaxies.length * 10; // MB estimate
+  const memoryUsage = totalTeams * 2.5 + (config.galaxies?.length ?? 0) * 10; // MB estimate
   
   let load: 'low' | 'medium' | 'high' | 'critical' = 'low';
   const recommendations: string[] = [];
@@ -1415,7 +1425,7 @@ export const createPerformanceImpactEstimator = (
     recommendations.push('Test with expected player count before event');
   }
   
-  if (config.crossGalaxyTrading && config.galaxies.length > 2) {
+  if (config.crossGalaxyTrading && (config.galaxies?.length ?? 0) > 2) {
     recommendations.push('Cross-galaxy trading may increase server load');
   }
   

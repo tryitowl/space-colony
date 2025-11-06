@@ -1,13 +1,14 @@
-import { 
-  doc, 
-  setDoc, 
-  updateDoc, 
-  onSnapshot, 
+import {
+  doc,
+  setDoc,
+  updateDoc,
+  onSnapshot,
   collection,
   query,
   where,
   getDocs,
-  getDoc
+  getDoc,
+  runTransaction
 } from 'firebase/firestore';
 import { ref, set, onValue, off, get } from 'firebase/database';
 import { firestore, realtimeDb } from '../firebase/config';
@@ -205,7 +206,7 @@ export class TradingService {
 
     try {
       // Use Firestore transaction to ensure atomicity
-      await firestore.runTransaction(async (transaction) => {
+      await runTransaction(firestore, async (transaction: import('firebase/firestore').Transaction) => {
         // Get the session document to find teams
         const sessionRef = doc(firestore, 'sessions', sessionId);
         const sessionDoc = await transaction.get(sessionRef);

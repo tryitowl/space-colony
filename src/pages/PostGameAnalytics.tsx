@@ -441,7 +441,7 @@ export const PostGameAnalytics: React.FC = () => {
             </div>
             <div className="flex space-x-3">
               <Button
-                variant="outline"
+                variant="secondary"
                 onClick={() => navigate('/')}
                 className="text-gray-300 border-gray-600"
               >
@@ -490,7 +490,7 @@ export const PostGameAnalytics: React.FC = () => {
             {(['overview', 'teams', 'trading', 'insights', 'timeline'] as const).map((tab) => (
               <Button
                 key={tab}
-                variant={activeTab === tab ? "default" : "ghost"}
+                variant={activeTab === tab ? "primary" : "secondary"}
                 size="sm"
                 onClick={() => setActiveTab(tab)}
                 className={cn(

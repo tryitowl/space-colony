@@ -19,7 +19,7 @@ import type {
   VictoryCondition,
   DEFAULT_GALAXY_CONFIGS
 } from '../types/galaxy.types';
-import type { ColonyType } from '../types/base.types';
+import type { ColonyType, Colony } from '../types';
 
 /**
  * Configuration templates for different galaxy setups
@@ -76,7 +76,7 @@ class GalaxyConfigurationService {
             name: 'Survival Victory',
             description: 'Teams that survive all rounds',
             type: 'survival',
-            evaluator: (teams) => teams.filter(t => !t.eliminationStatus.isEliminated).map(t => t.id)
+            evaluator: (teams: Colony[]) => teams.filter((t: Colony) => !t.eliminationStatus.isEliminated).map((t: Colony) => t.id)
           }
         ]
       },
@@ -125,10 +125,10 @@ class GalaxyConfigurationService {
             name: 'Economic Dominance',
             description: 'Highest total resource value',
             type: 'economic',
-            evaluator: (teams) => {
-              const sorted = [...teams].sort((a, b) => {
-                const aTotal = Object.values(a.resources).reduce((sum, val) => sum + val, 0);
-                const bTotal = Object.values(b.resources).reduce((sum, val) => sum + val, 0);
+            evaluator: (teams: Colony[]) => {
+              const sorted = [...teams].sort((a: Colony, b: Colony) => {
+                const aTotal = Object.values(a.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
+                const bTotal = Object.values(b.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
                 return bTotal - aTotal;
               });
               return [sorted[0].id];
@@ -197,19 +197,20 @@ class GalaxyConfigurationService {
             name: 'Tournament Victory',
             description: 'Top team from each galaxy advances',
             type: 'custom',
-            evaluator: (teams) => {
-              const galaxyGroups = new Map<string, typeof teams>();
-              teams.forEach(team => {
-                const galaxy = galaxyGroups.get(team.galaxyId) || [];
+            evaluator: (teams: Colony[]) => {
+              const galaxyGroups = new Map<string, Colony[]>();
+              teams.forEach((team: Colony) => {
+                const galaxyId = team.galaxyId || 'default';
+                const galaxy = galaxyGroups.get(galaxyId) || [];
                 galaxy.push(team);
-                galaxyGroups.set(team.galaxyId, galaxy);
+                galaxyGroups.set(galaxyId, galaxy);
               });
 
               const winners: string[] = [];
-              galaxyGroups.forEach(galaxyTeams => {
-                const sorted = galaxyTeams.sort((a, b) => {
-                  const aScore = Object.values(a.resources).reduce((sum, val) => sum + val, 0);
-                  const bScore = Object.values(b.resources).reduce((sum, val) => sum + val, 0);
+              galaxyGroups.forEach((galaxyTeams: Colony[]) => {
+                const sorted = galaxyTeams.sort((a: Colony, b: Colony) => {
+                  const aScore = Object.values(a.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
+                  const bScore = Object.values(b.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
                   return bScore - aScore;
                 });
                 if (sorted[0]) winners.push(sorted[0].id);
@@ -245,13 +246,13 @@ class GalaxyConfigurationService {
         configuration: {
           ...template.configuration,
           // Remove evaluator functions from victory conditions
-          victoryConditions: template.configuration.victoryConditions.map(vc => ({
+          victoryConditions: template.configuration.victoryConditions?.map(vc => ({
             id: vc.id,
             name: vc.name,
             description: vc.description,
             type: vc.type
             // evaluator function is not included for serialization
-          }))
+          })) ?? []
         },
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now()
@@ -340,13 +341,13 @@ class GalaxyConfigurationService {
       configuration: {
         ...template.configuration,
         // Remove evaluator functions from victory conditions
-        victoryConditions: template.configuration.victoryConditions.map(vc => ({
+        victoryConditions: template.configuration.victoryConditions?.map(vc => ({
           id: vc.id,
           name: vc.name,
           description: vc.description,
           type: vc.type
           // evaluator function is not included for serialization
-        }))
+        })) ?? []
       },
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now()
@@ -638,9 +639,9 @@ class GalaxyConfigurationService {
     participantCount: number
   ): { valid: boolean; issues: string[] } {
     const issues: string[] = [];
-    
-    const totalTeams = configuration.galaxies.reduce((sum, g) => sum + g.totalTeams, 0);
-    const teamsPerParticipant = participantCount / totalTeams;
+
+    const totalTeams = configuration.galaxies?.reduce((sum, g) => sum + (g.totalTeams ?? 0), 0) ?? 0;
+    const teamsPerParticipant = totalTeams > 0 ? participantCount / totalTeams : 0;
 
     if (teamsPerParticipant < 2) {
       issues.push('Too many teams for participant count. Consider reducing galaxy sizes.');
@@ -650,7 +651,7 @@ class GalaxyConfigurationService {
       issues.push('Too few teams for participant count. Consider adding more galaxies or teams.');
     }
 
-    if (configuration.crossGalaxyTrading && configuration.galaxies.length < 2) {
+    if (configuration.crossGalaxyTrading && (configuration.galaxies?.length ?? 0) < 2) {
       issues.push('Cross-galaxy trading requires at least 2 galaxies.');
     }
 
@@ -699,15 +700,15 @@ class GalaxyConfigurationService {
       features.push('Global events');
     }
 
-    if (configuration.galaxies.some(g => g.aiEnabled)) {
+    if (configuration.galaxies?.some(g => g.aiEnabled)) {
       features.push('AI opponents');
     }
 
-    if (configuration.galaxies.some(g => g.specialRules && g.specialRules.length > 0)) {
+    if (configuration.galaxies?.some(g => g.specialRules && g.specialRules.length > 0)) {
       features.push('Special rules');
     }
 
-    if (configuration.galaxies.length > 1) {
+    if ((configuration.galaxies?.length ?? 0) > 1) {
       features.push('Multi-galaxy');
     }
 
@@ -721,10 +722,10 @@ class GalaxyConfigurationService {
     let complexityScore = 0;
 
     if (configuration.crossGalaxyTrading) complexityScore += 2;
-    if (configuration.galaxies.length > 2) complexityScore += 2;
-    if (configuration.galaxies.some(g => g.specialRules && g.specialRules.length > 0)) complexityScore += 1;
-    if (configuration.galaxies.some(g => g.aiDifficulty === 'hard' || g.aiDifficulty === 'adaptive')) complexityScore += 2;
-    if (configuration.victoryConditions.length > 2) complexityScore += 1;
+    if ((configuration.galaxies?.length ?? 0) > 2) complexityScore += 2;
+    if (configuration.galaxies?.some(g => g.specialRules && g.specialRules.length > 0)) complexityScore += 1;
+    if (configuration.galaxies?.some(g => g.aiDifficulty === 'hard' || g.aiDifficulty === 'adaptive')) complexityScore += 2;
+    if ((configuration.victoryConditions?.length ?? 0) > 2) complexityScore += 1;
 
     if (complexityScore <= 2) return 'beginner';
     if (complexityScore <= 4) return 'intermediate';

@@ -125,9 +125,9 @@ export const FacilitatorDashboard: React.FC = () => {
     navigate('/');
   };
 
-  const getSessionStatus = (session: GameSession): 'online' | 'pending' | 'offline' => {
+  const getSessionStatus = (session: GameSession): 'online' | 'busy' | 'offline' => {
     if (session.gameState === 'completed') return 'offline';
-    if (session.gameState === 'setup') return 'pending';
+    if (session.gameState === 'setup') return 'busy';
     return 'online';
   };
 

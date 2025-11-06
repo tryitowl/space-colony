@@ -1,6 +1,7 @@
-import { 
+import {
   doc,
   getDoc,
+  setDoc,
   collection,
   onSnapshot
 } from 'firebase/firestore';
@@ -12,20 +13,21 @@ import type {
   ColonyType,
   GameSession 
 } from '../types';
-import type { 
-  AIColonyConfig, 
-  AIColonyState, 
-  AIDecision, 
+import type {
+  AIColonyConfig,
+  AIColonyState,
+  AIDecision,
   AIEvaluation,
   AIMemory,
   TradeEvaluation,
   AIStrategy,
-  AIDifficulty
+  AIDifficulty,
+  AITradeHistory
 } from '../types/ai.types';
 import { RESOURCE_CONSUMPTION } from '../types';
 import { TradingService } from './tradingService';
 import { AIStrategyService } from './aiStrategyService';
-import { aiPersonalityService, PersonalityProfile } from './aiPersonalityService';
+import { aiPersonalityService, type PersonalityProfile } from './aiPersonalityService';
 import { aiBehaviorPatternService } from './aiBehaviorPatternService';
 
 export class AIColonyService {
@@ -33,15 +35,19 @@ export class AIColonyService {
   private aiStates: Map<string, AIColonyState> = new Map();
   private unsubscribers: (() => void)[] = [];
   private decisionTimers: Map<string, NodeJS.Timeout> = new Map();
+  private sessionId: string;
+  private aiConfigs: AIColonyConfig[];
   private strategyService: AIStrategyService;
   private personalityProfiles: Map<string, PersonalityProfile> = new Map();
   private crossGalaxyMemory: Map<string, any> = new Map();
 
   private constructor(
-    private sessionId: string,
-    private aiConfigs: AIColonyConfig[],
+    sessionId: string,
+    aiConfigs: AIColonyConfig[],
     strategyService?: AIStrategyService
   ) {
+    this.sessionId = sessionId;
+    this.aiConfigs = aiConfigs;
     // Accept strategy service as dependency or create new instance
     this.strategyService = strategyService || new AIStrategyService();
   }

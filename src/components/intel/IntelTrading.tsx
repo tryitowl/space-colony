@@ -214,6 +214,7 @@ export const IntelTrading: React.FC<IntelTradingProps> = ({
                 onIntelChange={setSelectedOfferedIntel}
                 mode="offer"
                 maxSelections={5}
+                currentRound={currentRound}
               />
             </div>
             
@@ -230,6 +231,7 @@ export const IntelTrading: React.FC<IntelTradingProps> = ({
                 onIntelChange={setSelectedRequestedIntel}
                 mode="request"
                 maxSelections={5}
+                currentRound={currentRound}
               />
             </div>
           </div>

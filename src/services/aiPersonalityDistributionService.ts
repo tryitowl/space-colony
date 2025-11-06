@@ -283,9 +283,10 @@ export class AIPersonalityDistributionService {
     }));
     
     // Determine distribution config based on galaxy size and theme
+    const totalTeams = galaxy.totalTeams ?? 6;
     const config: Partial<PersonalityDistributionConfig> = {
-      targetVariety: galaxy.totalTeams > 8 ? 0.9 : 0.7,
-      avoidDuplicates: galaxy.totalTeams <= 7,
+      targetVariety: totalTeams > 8 ? 0.9 : 0.7,
+      avoidDuplicates: totalTeams <= 7,
       difficultyInfluence: difficulty === 'hard' ? 0.4 : 0.2
     };
     

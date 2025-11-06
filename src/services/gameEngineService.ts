@@ -32,7 +32,7 @@ import {
   DEFAULT_SCORING_RULES
 } from '../types/gameEngine';
 import type { GameSession, Colony } from '../types';
-import { RoundService, RoundEndProcessing } from './roundService';
+import { RoundService, type RoundEndProcessing } from './roundService';
 
 export class GameEngineService {
   private static instances: Map<string, GameEngineService> = new Map();
