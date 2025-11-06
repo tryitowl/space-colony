@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Colony Exchange | Immersive Team Building Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #1a1a2e;
+            --glass-bg: rgba(26, 26, 46, 0.3);
+            --accent-primary: #00d4ff;
+            --accent-secondary: #6c5ce7;
+            --accent-tertiary: #00ff88;
+            --accent-warning: #ff9500;
+            --accent-danger: #ff4757;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #6c5ce7 100%);
+            --gradient-secondary: linear-gradient(135deg, #6c5ce7 0%, #00ff88 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at center, rgba(108, 92, 231, 0.06) 0%, transparent 50%);
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Main Container */
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Hero Section - Quantum Badges Style */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .quantum-frame {
+            position: relative;
+            display: inline-block;
+            padding: 3rem;
+        }
+
+        /* Octagonal frame similar to Quantum Badges */
+        .quantum-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 300px;
+            border: 2px solid var(--accent-primary);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            opacity: 0.6;
+        }
+
+        .quantum-frame::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 280px;
+            border: 1px solid var(--accent-warning);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            opacity: 0.4;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        /* Corner indicators */
+        .corner-indicator {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-warning);
+            border-radius: 1px;
+        }
+
+        .corner-indicator:nth-child(1) { top: 30px; left: 30px; }
+        .corner-indicator:nth-child(2) { top: 30px; right: 30px; }
+        .corner-indicator:nth-child(3) { bottom: 30px; left: 30px; }
+        .corner-indicator:nth-child(4) { bottom: 30px; right: 30px; }
+        .corner-indicator:nth-child(5) { top: 0; left: 50%; transform: translateX(-50%); }
+        .corner-indicator:nth-child(6) { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .corner-indicator:nth-child(7) { left: 0; top: 50%; transform: translateY(-50%); }
+        .corner-indicator:nth-child(8) { right: 0; top: 50%; transform: translateY(-50%); }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title-main {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(4rem, 8vw, 8rem);
+            font-weight: 900;
+            color: var(--text-primary);
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .hero-title-sub {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 500;
+            color: var(--accent-warning);
+            text-shadow: 0 0 20px rgba(255, 149, 0, 0.5);
+            letter-spacing: 0.2em;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .cyberpunk-button {
+            position: relative;
+            background: rgba(10, 10, 15, 0.9);
+            border: 2px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .cyberpunk-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            animation: scan 2s infinite;
+        }
+
+        .cyberpunk-button::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-primary), transparent, var(--accent-warning));
+            z-index: -1;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cyberpunk-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+            border-color: var(--accent-warning);
+        }
+
+        .cyberpunk-button:hover::after {
+            opacity: 0.3;
+        }
+
+        .cyberpunk-button.primary {
+            border-color: var(--accent-tertiary);
+            color: var(--accent-tertiary);
+        }
+
+        .cyberpunk-button.secondary {
+            border-color: var(--accent-warning);
+            color: var(--accent-warning);
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Admin Login Section */
+        .admin-section {
+            position: relative;
+            text-align: center;
+        }
+
+        .security-lock {
+            position: relative;
+            display: inline-block;
+            padding: 2rem;
+            background: rgba(10, 10, 15, 0.95);
+            border: 2px solid var(--accent-primary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .security-lock::before,
+        .security-lock::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-warning);
+        }
+
+        .security-lock::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .security-lock::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .lock-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-warning);
+            border-radius: 50%;
+            animation: pulse-indicator 2s infinite;
+        }
+
+        @keyframes pulse-indicator {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .lock-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lock-icon {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .lock-icon::before {
+            content: '🔒';
+            font-size: 1.2rem;
+        }
+
+        .lock-circle {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 1px solid var(--accent-primary);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .lock-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .security-lock:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+            border-color: var(--accent-warning);
+        }
+
+        /* Technical details */
+        .tech-details {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .tech-details::before {
+            content: 'TRYITOWL_SCE_v2.1 | ';
+            color: var(--accent-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .quantum-frame::before {
+                width: 250px;
+                height: 250px;
+            }
+
+            .quantum-frame::after {
+                width: 230px;
+                height: 230px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .cyberpunk-button {
+                min-width: 280px;
+            }
+
+            .tech-details {
+                position: static;
+                text-align: center;
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quantum-frame {
+                padding: 2rem 1rem;
+            }
+
+            .quantum-frame::before {
+                width: 200px;
+                height: 200px;
+            }
+
+            .quantum-frame::after {
+                width: 180px;
+                height: 180px;
+            }
+
+            .lock-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .lock-text {
+                font-size: 1rem;
+            }
+        }
+
+        /* Additional HUD elements */
+        .hud-corner {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--accent-primary);
+            opacity: 0.3;
+        }
+
+        .hud-corner.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .hud-corner.top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .hud-corner.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .hud-corner.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background-animation"></div>
+    <div class="stars" id="stars"></div>
+
+    <!-- HUD Corner Elements -->
+    <div class="hud-corner top-left"></div>
+    <div class="hud-corner top-right"></div>
+    <div class="hud-corner bottom-left"></div>
+    <div class="hud-corner bottom-right"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="quantum-frame">
+                <div class="corner-indicator"></div>
+                <div class="corner-indicator"></div>
+                <div class="corner-indicator"></div>
+                <div class="corner-indicator"></div>
+                <div class="corner-indicator"></div>
+                <div class="corner-indicator"></div>
+                <div class="corner-indicator"></div>
+                <div class="corner-indicator"></div>
+                
+                <div class="hero-content">
+                    <h1 class="hero-title-main">SPACE</h1>
+                    <h2 class="hero-title-sub">COLONY</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/game" class="cyberpunk-button primary">
+                Access with Game Code
+            </a>
+            <a href="/demo" class="cyberpunk-button">
+                Watch Demo
+            </a>
+            <a href="/about" class="cyberpunk-button secondary">
+                Whom is it for?
+            </a>
+        </div>
+
+        <!-- Admin Login Section -->
+        <div class="admin-section">
+            <div class="security-lock" onclick="window.location.href='/admin'">
+                <div class="lock-indicator"></div>
+                <div class="lock-content">
+                    <div class="lock-icon">
+                        <div class="lock-circle"></div>
+                    </div>
+                    <div class="lock-text">Admin Login</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="tech-details">
+            QUANTUM_SECURE | NEURAL_LINK_ENABLED
+        </div>
+    </div>
+
+    <script>
+        // Animated stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numStars = 80;
+
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 4 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Hover effects for buttons
+        document.querySelectorAll('.cyberpunk-button').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.textShadow = '0 0 10px currentColor';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.textShadow = 'none';
+            });
+        });
+
+        // Admin lock click effect
+        document.querySelector('.security-lock').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+        });
+    </script>
+</body>
+</html>

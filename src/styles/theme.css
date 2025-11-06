@@ -1,0 +1,295 @@
+/* Space Colony Exchange - Glassmorphism Theme */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Space Theme Color Palette */
+  --color-space-black: #0a0a0f;
+  --color-panel-bg: rgba(26, 26, 46, 0.4);
+  --color-panel-bg-active: rgba(26, 26, 46, 0.6);
+  --color-panel-border: rgba(255, 255, 255, 0.1);
+  --color-panel-border-active: rgba(0, 212, 255, 0.3);
+  
+  --color-accent-primary: #00d4ff;
+  --color-accent-secondary: #6c5ce7;
+  --color-success: #00ff88;
+  --color-warning: #ff9500;
+  --color-danger: #ff4757;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #666666;
+  
+  /* Colony Type Colors */
+  --color-mining: #ff6b35;
+  --color-agricultural: #4ecdc4;
+  --color-research: #6c5ce7;
+  --color-trade: #00d4ff;
+  --color-military: #ff4757;
+  --color-manufacturing: #ffa726;
+  
+  /* Resource Colors */
+  --color-oxygen: #00d4ff;
+  --color-food: #4ecdc4;
+  --color-water: #3498db;
+  --color-energy: #f39c12;
+  --color-minerals: #e67e22;
+  --color-tech: #9b59b6;
+  --color-intel: #1abc9c;
+  --color-defense: #e74c3c;
+  
+  /* Glassmorphism Effects */
+  --glass-blur: blur(20px);
+  --glass-blur-light: blur(10px);
+  --glass-opacity: 0.2;
+  --glass-opacity-active: 0.4;
+  --glass-opacity-hover: 0.3;
+  
+  /* Shadows */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --shadow-neon: 0 0 20px rgba(0, 212, 255, 0.5);
+  --shadow-neon-strong: 0 0 40px rgba(0, 212, 255, 0.8);
+  
+  /* Typography */
+  --font-primary: 'Orbitron', monospace;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Font Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+  
+  /* Z-Index */
+  --z-background: -1;
+  --z-base: 0;
+  --z-panel: 10;
+  --z-modal: 50;
+  --z-toast: 100;
+  --z-tooltip: 200;
+  
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-space-black);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Utility Classes */
+.glass-panel {
+  background: var(--color-panel-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass), var(--shadow-glass-inset);
+  transition: all var(--transition-normal);
+}
+
+.glass-panel:hover {
+  background: var(--color-panel-bg-active);
+  border-color: var(--color-panel-border-active);
+  transform: translateY(-2px);
+}
+
+.glass-panel.active {
+  background: var(--color-panel-bg-active);
+  border-color: var(--color-accent-primary);
+  box-shadow: var(--shadow-glass), var(--shadow-neon);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-success {
+  background: linear-gradient(135deg, var(--color-success), var(--color-accent-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-warning {
+  background: linear-gradient(135deg, var(--color-warning), var(--color-danger));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.neon-glow {
+  box-shadow: var(--shadow-neon);
+}
+
+.neon-glow-strong {
+  box-shadow: var(--shadow-neon-strong);
+}
+
+/* Animation Keyframes */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .mobile-landscape-only {
+    display: none;
+  }
+  
+  @media (orientation: landscape) {
+    .mobile-landscape-only {
+      display: block;
+    }
+    
+    .mobile-portrait-only {
+      display: none;
+    }
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent-primary);
+  border-radius: var(--radius-full);
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* Focus Styles */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Selection Styles */
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: var(--color-text-primary);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .glass-panel {
+    background: white !important;
+    color: black !important;
+    border: 1px solid black !important;
+  }
+}

@@ -1,0 +1,256 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function hasValidGameCode() {
+      return request.auth.token.gameCode != null && 
+             request.auth.token.gameCode.size() == 6;
+    }
+    
+    function extractEventFromGameCode(gameCode) {
+      return gameCode[0:2];
+    }
+    
+    function extractSessionFromGameCode(gameCode) {
+      return gameCode[2:3];
+    }
+    
+    function extractTeamFromGameCode(gameCode) {
+      return gameCode[3:5];
+    }
+    
+    function extractPlayerFromGameCode(gameCode) {
+      return gameCode[5:6];
+    }
+    
+    function isPlayerInTeam(teamId, gameCode) {
+      return teamId == extractEventFromGameCode(gameCode) + 
+                     extractSessionFromGameCode(gameCode) + 
+                     extractTeamFromGameCode(gameCode);
+    }
+    
+    function isPlayerInSession(sessionId, gameCode) {
+      return sessionId == extractEventFromGameCode(gameCode) + 
+                         extractSessionFromGameCode(gameCode);
+    }
+    
+    function isValidResourceUpdate(before, after) {
+      // Check that resources don't go negative
+      return after.oxygen >= 0 && after.food >= 0 && 
+             after.water >= 0 && after.energy >= 0 &&
+             after.minerals >= 0 && after.alloys >= 0 &&
+             after.tech_components >= 0 && after.defense >= 0 &&
+             after.production >= 0 && after.tech >= 0 &&
+             after.credits >= 0;
+    }
+    
+    function isValidTradeOffer(offer) {
+      // Validate trade offer structure and limits
+      return offer.fromTeam is string &&
+             offer.toTeam is string &&
+             offer.fromTeam != offer.toTeam &&
+             offer.offering is map &&
+             offer.requesting is map &&
+             offer.expiresAt > request.time;
+    }
+    
+    // Rate limiting helper (simplified - actual implementation in Cloud Functions)
+    function withinRateLimit() {
+      return true; // This will be enforced in Cloud Functions
+    }
+    
+    // Events collection
+    match /events/{eventId} {
+      // Allow admins to read/write events without game code
+      allow read, write: if isAuthenticated();
+      
+      // Players with game codes can also read their specific event
+      allow read: if isAuthenticated() && 
+                     hasValidGameCode() &&
+                     extractEventFromGameCode(request.auth.token.gameCode) == eventId;
+      
+      // Sessions subcollection  
+      match /sessions/{sessionId} {
+        allow read, write: if isAuthenticated() && 
+                            hasValidGameCode() &&
+                            isPlayerInSession(sessionId, request.auth.token.gameCode);
+        
+        // Teams subcollection
+        match /teams/{teamId} {
+          allow read: if isAuthenticated() && 
+                        hasValidGameCode() &&
+                        isPlayerInSession(sessionId, request.auth.token.gameCode);
+          
+          allow write: if isAuthenticated() && 
+                         hasValidGameCode() &&
+                         isPlayerInTeam(teamId, request.auth.token.gameCode) &&
+                         withinRateLimit();
+          
+          // Resource updates must be valid
+          allow update: if isAuthenticated() && 
+                          hasValidGameCode() &&
+                          isPlayerInTeam(teamId, request.auth.token.gameCode) &&
+                          isValidResourceUpdate(resource.data, request.resource.data) &&
+                          withinRateLimit();
+          
+          // Players subcollection
+          match /players/{playerId} {
+            allow read: if isAuthenticated() && 
+                          hasValidGameCode() &&
+                          isPlayerInSession(sessionId, request.auth.token.gameCode);
+            
+            allow write: if isAuthenticated() && 
+                           hasValidGameCode() &&
+                           playerId == request.auth.token.gameCode &&
+                           isPlayerInTeam(teamId, request.auth.token.gameCode);
+          }
+        }
+        
+        // Intel subcollection
+        match /intel/{intelId} {
+          allow read: if isAuthenticated() && 
+                        hasValidGameCode() &&
+                        isPlayerInSession(sessionId, request.auth.token.gameCode);
+          
+          // Intel can only be created/updated by Cloud Functions
+          allow write: if false;
+        }
+        
+        // Trades subcollection
+        match /trades/{tradeId} {
+          allow read: if isAuthenticated() && 
+                        hasValidGameCode() &&
+                        isPlayerInSession(sessionId, request.auth.token.gameCode);
+          
+          allow create: if isAuthenticated() && 
+                          hasValidGameCode() &&
+                          (isPlayerInTeam(resource.data.fromTeam, request.auth.token.gameCode) ||
+                           isPlayerInTeam(resource.data.toTeam, request.auth.token.gameCode)) &&
+                          isValidTradeOffer(request.resource.data) &&
+                          withinRateLimit();
+          
+          allow update: if isAuthenticated() && 
+                          hasValidGameCode() &&
+                          (isPlayerInTeam(resource.data.fromTeam, request.auth.token.gameCode) ||
+                           isPlayerInTeam(resource.data.toTeam, request.auth.token.gameCode)) &&
+                          withinRateLimit();
+          
+          // Only allow status updates, not content changes for existing trades
+          allow update: if isAuthenticated() && 
+                          hasValidGameCode() &&
+                          isPlayerInTeam(resource.data.toTeam, request.auth.token.gameCode) &&
+                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']) &&
+                          withinRateLimit();
+        }
+      }
+    }
+    
+    // Game configuration and templates (read-only for players)
+    match /gameConfig/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only admin/Cloud Functions can modify
+    }
+    
+    // System metrics and monitoring (read-only)
+    match /systemMetrics/{metricId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only Cloud Functions can update
+    }
+    
+    // Audit logs (write-only for tracking)
+    match /auditLogs/{logId} {
+      allow read: if false; // Only admin access
+      allow write: if isAuthenticated(); // Allow logging user actions
+    }
+    
+    // Galaxy Configurations collection (for new architecture)
+    match /galaxyConfigurations/{configId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // Sessions collection (standalone, not under events)
+    match /sessions/{sessionId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // Player Data collection (for reporting)
+    match /playerData/{dataId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // Teams collection (root level for new architecture)
+    match /teams/{teamId} {
+      // Anyone authenticated can read teams
+      allow read: if isAuthenticated();
+      
+      // Team members can update their own team
+      allow update: if isAuthenticated() && 
+                      hasValidGameCode() &&
+                      exists(/databases/$(database)/documents/teams/$(teamId)) &&
+                      resource.data.players[request.auth.uid] != null &&
+                      isValidResourceUpdate(resource.data.resources, request.resource.data.resources) &&
+                      withinRateLimit();
+      
+      // Teams can only be created by Cloud Functions during session setup
+      allow create: if false;
+      
+      // Teams cannot be deleted
+      allow delete: if false;
+    }
+    
+    // Crisis Events collection
+    match /crisisEvents/{eventId} {
+      // Players in the session can read crisis events
+      allow read: if isAuthenticated() && 
+                    hasValidGameCode() &&
+                    exists(/databases/$(database)/documents/sessions/$(resource.data.sessionId)) &&
+                    isPlayerInSession(resource.data.sessionId, request.auth.token.gameCode);
+      
+      // Only Cloud Functions can create/update crisis events
+      allow write: if false;
+    }
+    
+    // Game Events Log collection
+    match /gameEvents/{eventId} {
+      // Players can read their session's events
+      allow read: if isAuthenticated() && 
+                    hasValidGameCode() &&
+                    exists(/databases/$(database)/documents/sessions/$(resource.data.sessionId)) &&
+                    isPlayerInSession(resource.data.sessionId, request.auth.token.gameCode);
+      
+      // Events can be created by authenticated users for logging
+      allow create: if isAuthenticated() && 
+                      hasValidGameCode() &&
+                      request.resource.data.sessionId != null &&
+                      isPlayerInSession(request.resource.data.sessionId, request.auth.token.gameCode);
+      
+      // Events cannot be modified or deleted
+      allow update, delete: if false;
+    }
+    
+    // Trade Decisions collection (for multi-player approval)
+    match /sessions/{sessionId}/tradeDecisions/{decisionId} {
+      // Players in session can read decisions
+      allow read: if isAuthenticated() && 
+                    hasValidGameCode() &&
+                    isPlayerInSession(sessionId, request.auth.token.gameCode);
+      
+      // Team members can vote on decisions
+      allow update: if isAuthenticated() && 
+                      hasValidGameCode() &&
+                      isPlayerInSession(sessionId, request.auth.token.gameCode) &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes', 'updatedAt']) &&
+                      withinRateLimit();
+      
+      // Decisions are created by Cloud Functions
+      allow create: if false;
+      allow delete: if false;
+    }
+  }
+}

@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Colony Exchange - Admin Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #1a1a2e;
+            --glass-bg: rgba(26, 26, 46, 0.3);
+            --accent-primary: #00d4ff;
+            --accent-secondary: #6c5ce7;
+            --accent-tertiary: #00ff88;
+            --accent-warning: #ff9500;
+            --accent-danger: #ff4757;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #6c5ce7 100%);
+            --gradient-secondary: linear-gradient(135deg, #6c5ce7 0%, #00ff88 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated Background */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(0, 255, 136, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at center, rgba(108, 92, 231, 0.04) 0%, transparent 50%);
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                repeating-linear-gradient(0deg, rgba(0, 212, 255, 0.03), rgba(0, 212, 255, 0.03) 1px, transparent 1px, transparent 40px),
+                repeating-linear-gradient(90deg, rgba(0, 212, 255, 0.03), rgba(0, 212, 255, 0.03) 1px, transparent 1px, transparent 40px);
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--accent-primary);
+            padding: 1rem 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            text-shadow: 0 0 10px var(--accent-primary);
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-tertiary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .status-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-tertiary);
+        }
+
+        .time-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Dashboard */
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto auto;
+            gap: 2rem;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* HUD Panel Base */
+        .hud-panel {
+            background: rgba(10, 10, 15, 0.9);
+            border: 1px solid var(--accent-primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .hud-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-warning));
+        }
+
+        .hud-panel:hover {
+            border-color: var(--accent-warning);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Corner Indicators */
+        .corner-indicators::after,
+        .corner-indicators::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--accent-warning);
+        }
+
+        .corner-indicators::before {
+            top: 8px;
+            left: 8px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-indicators::after {
+            bottom: 8px;
+            right: 8px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Panel Headers */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .panel-code {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-warning);
+            opacity: 0.8;
+        }
+
+        /* Create Event Form */
+        .create-event {
+            grid-column: 1 / 3;
+            grid-row: 1 / 3;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            border: 1px solid var(--accent-primary);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-warning);
+            box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.2);
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300d4ff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5rem 1.5rem;
+            padding-right: 2.5rem;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        /* Timer Display */
+        .timer-display {
+            grid-column: 3;
+            grid-row: 2;
+            text-align: center;
+        }
+
+        .countdown-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--accent-primary) 0deg,
+                var(--accent-warning) 120deg,
+                var(--accent-danger) 240deg,
+                var(--accent-primary) 360deg
+            );
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .countdown-inner {
+            background: var(--primary-bg);
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .countdown-time {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .countdown-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Active Sessions */
+        .active-sessions {
+            grid-column: 1;
+            grid-row: 3 / 5;
+        }
+
+        .session-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(26, 26, 46, 0.5);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .session-item:hover {
+            border-color: var(--accent-warning);
+            background: rgba(26, 26, 46, 0.8);
+        }
+
+        .session-info h4 {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .session-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .session-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-tertiary);
+        }
+
+        .status-dot.warning {
+            background: var(--accent-warning);
+        }
+
+        .status-dot.danger {
+            background: var(--accent-danger);
+        }
+
+        /* System Monitor */
+        .system-monitor {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .system-item {
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .system-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .system-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .system-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        /* Event Templates */
+        .event-templates {
+            grid-column: 3;
+            grid-row: 3;
+        }
+
+        .template-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(108, 92, 231, 0.1);
+            border: 1px solid var(--accent-secondary);
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-item:hover {
+            border-color: var(--accent-warning);
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        .template-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .template-duration {
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            grid-column: 2 / 4;
+            grid-row: 4;
+        }
+
+        .activity-feed {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .activity-time {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-warning);
+            min-width: 60px;
+        }
+
+        .activity-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-type {
+            padding: 0.25rem 0.5rem;
+            background: var(--accent-primary);
+            color: var(--primary-bg);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .activity-type.warning {
+            background: var(--accent-warning);
+        }
+
+        .activity-type.success {
+            background: var(--accent-tertiary);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--accent-primary);
+            background: rgba(10, 10, 15, 0.8);
+            color: var(--text-primary);
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            animation: scan 2s infinite;
+        }
+
+        .btn:hover {
+            border-color: var(--accent-warning);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn.primary {
+            border-color: var(--accent-tertiary);
+            color: var(--accent-tertiary);
+        }
+
+        .btn.danger {
+            border-color: var(--accent-danger);
+            color: var(--accent-danger);
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+                padding: 1rem;
+            }
+
+            .create-event {
+                grid-column: 1 / 3;
+                grid-row: 1 / 3;
+            }
+
+            .quick-stats {
+                grid-column: 1;
+                grid-row: 3;
+            }
+
+            .timer-display {
+                grid-column: 2;
+                grid-row: 3;
+            }
+
+            .active-sessions {
+                grid-column: 1;
+                grid-row: 4 / 6;
+            }
+
+            .system-monitor {
+                grid-column: 2;
+                grid-row: 4;
+            }
+
+            .event-templates {
+                grid-column: 2;
+                grid-row: 5;
+            }
+
+            .recent-activity {
+                grid-column: 1 / 3;
+                grid-row: 6;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .create-event,
+            .quick-stats,
+            .timer-display,
+            .active-sessions,
+            .system-monitor,
+            .event-templates,
+            .recent-activity {
+                grid-column: 1;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .system-grid,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background-animation"></div>
+    <div class="stars"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">SPACE COLONY EXCHANGE</div>
+            <div class="system-status">
+                <div class="status-indicator"></div>
+                <span class="status-text">SYSTEM ONLINE</span>
+                <div class="time-display" id="currentTime"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard">
+        <!-- Create Event Panel -->
+        <section class="hud-panel corner-indicators create-event">
+            <div class="panel-header">
+                <h2 class="panel-title">Create New Event</h2>
+                <span class="panel-code">EVT/CREATE</span>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Event Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Q1 Leadership Workshop">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Organization</label>
+                    <input type="text" class="form-input" placeholder="Company or Team Name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Total Participants</label>
+                    <input type="number" class="form-input" placeholder="10-360" min="10" max="360">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Session Duration</label>
+                    <select class="form-input form-select">
+                        <option value="">Select Duration</option>
+                        <option value="45">45 Minutes</option>
+                        <option value="60">60 Minutes</option>
+                        <option value="75">75 Minutes</option>
+                        <option value="custom">Custom Duration</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Event Date</label>
+                    <input type="date" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Event Time</label>
+                    <input type="time" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Facilitator Email</label>
+                    <input type="email" class="form-input" placeholder="facilitator@company.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Event Type</label>
+                    <select class="form-input form-select">
+                        <option value="">Select Type</option>
+                        <option value="team-building">Team Building</option>
+                        <option value="leadership">Leadership Development</option>
+                        <option value="onboarding">Employee Onboarding</option>
+                        <option value="training">Skills Training</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn primary">Create Event</button>
+                <button class="btn">Save as Template</button>
+                <button class="btn danger">Cancel</button>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="hud-panel corner-indicators quick-stats">
+            <div class="panel-header">
+                <h3 class="panel-title">System Status</h3>
+                <span class="panel-code">SYS/STATS</span>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">12</span>
+                    <span class="stat-label">Active Events</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">247</span>
+                    <span class="stat-label">Participants</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">98%</span>
+                    <span class="stat-label">Uptime</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">156</span>
+                    <span class="stat-label">Total Events</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timer Display -->
+        <section class="hud-panel corner-indicators timer-display">
+            <div class="panel-header">
+                <h3 class="panel-title">System Time</h3>
+                <span class="panel-code">TIME/SYNC</span>
+            </div>
+            <div class="countdown-circle">
+                <div class="countdown-inner">
+                    <div class="countdown-time" id="systemClock">15:24:37</div>
+                    <div class="countdown-label">UTC TIME</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Sessions -->
+        <section class="hud-panel corner-indicators active-sessions">
+            <div class="panel-header">
+                <h3 class="panel-title">Active Sessions</h3>
+                <span class="panel-code">ACT/SESS</span>
+            </div>
+            <div class="session-list">
+                <div class="session-item">
+                    <div class="session-info">
+                        <h4>TechCorp Leadership</h4>
+                        <p>24 participants • Round 3/5</p>
+                    </div>
+                    <div class="session-status">
+                        <div class="status-dot"></div>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <div class="session-item">
+                    <div class="session-info">
+                        <h4>StartupXYZ Onboarding</h4>
+                        <p>12 participants • Round 2/5</p>
+                    </div>
+                    <div class="session-status">
+                        <div class="status-dot warning"></div>
+                        <span>Warning</span>
+                    </div>
+                </div>
+                <div class="session-item">
+                    <div class="session-info">
+                        <h4>Global Corp Training</h4>
+                        <p>48 participants • Round 4/5</p>
+                    </div>
+                    <div class="session-status">
+                        <div class="status-dot"></div>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <div class="session-item">
+                    <div class="session-info">
+                        <h4>Innovation Labs</h4>
+                        <p>18 participants • Round 1/5</p>
+                    </div>
+                    <div class="session-status">
+                        <div class="status-dot danger"></div>
+                        <span>Critical</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Monitor -->
+        <section class="hud-panel corner-indicators system-monitor">
+            <div class="panel-header">
+                <h3 class="panel-title">System Monitor</h3>
+                <span class="panel-code">SYS/MON</span>
+            </div>
+            <div class="system-grid">
+                <div class="system-item">
+                    <div class="system-icon">🔧</div>
+                    <div class="system-label">CPU Usage</div>
+                    <div class="system-value">23%</div>
+                </div>
+                <div class="system-item">
+                    <div class="system-icon">💾</div>
+                    <div class="system-label">Memory</div>
+                    <div class="system-value">67%</div>
+                </div>
+                <div class="system-item">
+                    <div class="system-icon">🌐</div>
+                    <div class="system-label">Network</div>
+                    <div class="system-value">STABLE</div>
+                </div>
+                <div class="system-item">
+                    <div class="system-icon">🔒</div>
+                    <div class="system-label">Security</div>
+                    <div class="system-value">SECURE</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event Templates -->
+        <section class="hud-panel corner-indicators event-templates">
+            <div class="panel-header">
+                <h3 class="panel-title">Quick Templates</h3>
+                <span class="panel-code">TPL/QUICK</span>
+            </div>
+            <div class="template-item">
+                <div>
+                    <div class="template-name">Standard Workshop</div>
+                    <div class="template-duration">60 minutes</div>
+                </div>
+            </div>
+            <div class="template-item">
+                <div>
+                    <div class="template-name">Extended Session</div>
+                    <div class="template-duration">75 minutes</div>
+                </div>
+            </div>
+            <div class="template-item">
+                <div>
+                    <div class="template-name">Quick Demo</div>
+                    <div class="template-duration">45 minutes</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Activity -->
+        <section class="hud-panel corner-indicators recent-activity">
+            <div class="panel-header">
+                <h3 class="panel-title">Recent Activity</h3>
+                <span class="panel-code">ACT/LOG</span>
+            </div>
+            <div class="activity-feed">
+                <div class="activity-item">
+                    <div class="activity-time">15:23</div>
+                    <div class="activity-text">New event "Q2 Strategy Session" created</div>
+                    <div class="activity-type">CREATE</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">15:19</div>
+                    <div class="activity-text">TechCorp Leadership session completed successfully</div>
+                    <div class="activity-type success">SUCCESS</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">15:15</div>
+                    <div class="activity-text">Connection issue detected in session GLB-2024-03</div>
+                    <div class="activity-type warning">WARNING</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">15:12</div>
+                    <div class="activity-text">48 participants joined Innovation Labs session</div>
+                    <div class="activity-type">JOIN</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">15:08</div>
+                    <div class="activity-text">System backup completed successfully</div>
+                    <div class="activity-type success">BACKUP</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: false,
+                timeZone: 'UTC'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+            document.getElementById('systemClock').textContent = timeString;
+        }
+
+        // Update time every second
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Form interactions
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.borderColor = 'var(--accent-warning)';
+                this.style.boxShadow = '0 0 0 2px rgba(255, 149, 0, 0.2)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.borderColor = 'var(--accent-primary)';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Button interactions
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-2px)';
+                }, 100);
+            });
+        });
+
+        // Template selection
+        document.querySelectorAll('.template-item').forEach(template => {
+            template.addEventListener('click', function() {
+                // Simulate template loading
+                this.style.backgroundColor = 'rgba(255, 149, 0, 0.2)';
+                setTimeout(() => {
+                    this.style.backgroundColor = 'rgba(108, 92, 231, 0.1)';
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

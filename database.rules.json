@@ -1,0 +1,90 @@
+{
+  "rules": {
+    // Helper function definitions (as rules)
+    ".read": false,
+    ".write": false,
+    
+    // Sessions live data
+    "sessions": {
+      "$sessionId": {
+        "live": {
+          ".read": "auth != null && ((auth.token.gameCode != null && auth.token.gameCode.substr(0, 3) == $sessionId) || auth.token.role == 'facilitator' || auth.token.role == 'admin')",
+          ".write": "auth != null && (auth.token.role == 'system' || auth.token.role == 'facilitator' || auth.token.role == 'admin')"
+        }
+      }
+    },
+    
+    // Teams live status 
+    "teams": {
+      "$sessionId": {
+        ".read": "auth != null && ((auth.token.gameCode != null && auth.token.gameCode.substr(0, 3) == $sessionId) || auth.token.role == 'facilitator' || auth.token.role == 'admin')",
+        "$teamId": {
+          "status": {
+            ".write": "auth != null && ((auth.token.gameCode != null && auth.token.gameCode.substr(0, 5) == $teamId) || auth.token.role == 'system' || auth.token.role == 'facilitator' || auth.token.role == 'admin')"
+          }
+        }
+      }
+    },
+    
+    // Live trading activity (removed - handled in Firestore)
+    // "trades": {
+    //   "$sessionId": {
+    //     ".read": "auth != null && auth.token.gameCode != null && auth.token.gameCode.substr(0, 3) == $sessionId",
+    //     "$tradeId": {
+    //       ".write": "auth != null && auth.token.gameCode != null && auth.token.gameCode.substr(0, 3) == $sessionId"
+    //     }
+    //   }
+    // },
+    
+    // Player presence
+    "players": {
+      "$playerId": {
+        "presence": {
+          ".read": "auth != null && (auth.token.gameCode == $playerId || auth.token.role == 'facilitator' || auth.token.role == 'admin')",
+          ".write": "auth != null && (auth.token.gameCode == $playerId || auth.token.role == 'system')",
+          ".validate": "newData.hasChildren(['status', 'lastSeen', 'sessionId', 'teamId']) && newData.child('status').val().matches(/^(online|offline|away)$/)"
+        }
+      }
+    },
+    
+    // Game events stream
+    "events": {
+      "$sessionId": {
+        "stream": {
+          ".read": "auth != null && ((auth.token.gameCode != null && auth.token.gameCode.substr(0, 3) == $sessionId) || auth.token.role == 'facilitator' || auth.token.role == 'admin')",
+          ".write": "auth != null && (auth.token.role == 'system' || auth.token.role == 'facilitator' || auth.token.role == 'admin')",
+          "$timestamp": {
+            ".validate": "newData.hasChildren(['type', 'timestamp']) && newData.child('type').val().matches(/^(trade_completed|round_started|round_ended|intel_distributed|team_eliminated|alien_contact|phase_change)$/)"
+          }
+        }
+      }
+    },
+    
+    // Live leaderboards
+    "leaderboards": {
+      "$sessionId": {
+        ".read": "auth != null && ((auth.token.gameCode != null && auth.token.gameCode.substr(0, 3) == $sessionId) || auth.token.role == 'facilitator' || auth.token.role == 'admin')",
+        ".write": "auth != null && (auth.token.role == 'system' || auth.token.role == 'facilitator' || auth.token.role == 'admin')",
+        "$index": {
+          ".validate": "newData.hasChildren(['teamId', 'score', 'rank']) && newData.child('score').isNumber() && newData.child('rank').isNumber()"
+        }
+      }
+    },
+    
+    // Rate limiting data
+    "rateLimits": {
+      "$playerId": {
+        ".read": "auth != null && (auth.token.gameCode == $playerId || auth.token.role == 'system' || auth.token.role == 'admin')",
+        ".write": "auth != null && (auth.token.role == 'system' || auth.token.role == 'admin')",
+        ".validate": "newData.hasChildren(['tradeAttempts', 'resourceUpdates'])"
+      }
+    },
+    
+    // System metrics (admin only)
+    "systemMetrics": {
+      ".read": "auth != null && (auth.token.role == 'admin' || auth.token.role == 'facilitator')",
+      ".write": "auth != null && (auth.token.role == 'system' || auth.token.role == 'admin')",
+      ".validate": "newData.hasChildren(['activeEvents', 'activeSessions', 'totalPlayers', 'lastUpdated']) && newData.child('lastUpdated').isNumber()"
+    }
+  }
+}

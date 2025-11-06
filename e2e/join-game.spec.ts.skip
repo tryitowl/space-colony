@@ -1,0 +1,164 @@
+import { test, expect } from '@playwright/test';
+
+test.describe('Join Game Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/join');
+  });
+
+  test('complete join game flow', async ({ page }) => {
+    // Step 1: Enter game code
+    await expect(page.getByText('Join Space Colony Exchange')).toBeVisible();
+    await page.fill('input[placeholder="Enter 6-character code"]', 'TEST01');
+    await page.click('button:has-text("Join Galaxy")');
+
+    // Wait for team selection
+    await expect(page.getByText('Select Your Colony')).toBeVisible({ timeout: 10000 });
+
+    // Step 2: Select a team
+    const teamCards = await page.locator('.team-card').all();
+    expect(teamCards.length).toBeGreaterThan(0);
+
+    // Click first available team
+    await page.locator('.team-card').first().getByRole('button', { name: 'Join Team' }).click();
+
+    // Step 3: Enter player name
+    await expect(page.getByText('Enter Your Name')).toBeVisible();
+    await page.fill('input[placeholder="Your name"]', 'Test Player');
+    await page.click('button:has-text("Start Playing")');
+
+    // Should navigate to colony dashboard
+    await expect(page).toHaveURL(/\/colony/);
+    await expect(page.getByText('Colony Dashboard')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('handles invalid game code', async ({ page }) => {
+    await page.fill('input[placeholder="Enter 6-character code"]', 'BAD');
+    await page.click('button:has-text("Join Galaxy")');
+
+    await expect(page.getByText('Please enter a valid 6-character game code')).toBeVisible();
+  });
+
+  test('shows loading state', async ({ page }) => {
+    await page.fill('input[placeholder="Enter 6-character code"]', 'SLOW01');
+    await page.click('button:has-text("Join Galaxy")');
+
+    await expect(page.getByText('Connecting to galaxy...')).toBeVisible();
+  });
+
+  test('allows navigation back', async ({ page }) => {
+    // Enter code and proceed
+    await page.fill('input[placeholder="Enter 6-character code"]', 'TEST01');
+    await page.click('button:has-text("Join Galaxy")');
+
+    // Wait for team selection
+    await expect(page.getByText('Select Your Colony')).toBeVisible({ timeout: 10000 });
+
+    // Navigate back
+    await page.click('button[aria-label="Go back"]');
+
+    // Should be back at code entry
+    await expect(page.getByText('Join Space Colony Exchange')).toBeVisible();
+    await expect(page.locator('input[placeholder="Enter 6-character code"]')).toBeVisible();
+  });
+
+  test('validates player name', async ({ page }) => {
+    // Navigate to name entry
+    await page.fill('input[placeholder="Enter 6-character code"]', 'TEST01');
+    await page.click('button:has-text("Join Galaxy")');
+    await expect(page.getByText('Select Your Colony')).toBeVisible({ timeout: 10000 });
+    await page.locator('.team-card').first().getByRole('button', { name: 'Join Team' }).click();
+
+    // Try empty name
+    await page.click('button:has-text("Start Playing")');
+    await expect(page.getByText('Please enter your name')).toBeVisible();
+
+    // Try short name
+    await page.fill('input[placeholder="Your name"]', 'A');
+    await page.click('button:has-text("Start Playing")');
+    await expect(page.getByText('Name must be at least 2 characters')).toBeVisible();
+  });
+
+  test('handles full teams', async ({ page }) => {
+    await page.fill('input[placeholder="Enter 6-character code"]', 'FULL01');
+    await page.click('button:has-text("Join Galaxy")');
+
+    await expect(page.getByText('Select Your Colony')).toBeVisible({ timeout: 10000 });
+
+    // Look for a full team indicator
+    const fullTeam = page.locator('.team-card:has-text("4/4 players")').first();
+    await expect(fullTeam).toBeVisible();
+    
+    // Join button should be disabled
+    const joinButton = fullTeam.getByRole('button', { name: 'Join Team' });
+    await expect(joinButton).toBeDisabled();
+  });
+
+  test('mobile layout works correctly', async ({ page, isMobile }) => {
+    if (isMobile) {
+      // Check mobile-specific layout
+      await expect(page.locator('.landscape-lock-message')).toBeHidden();
+      
+      // Enter code
+      await page.fill('input[placeholder="Enter 6-character code"]', 'TEST01');
+      await page.click('button:has-text("Join Galaxy")');
+
+      // Team cards should stack vertically on mobile
+      await expect(page.getByText('Select Your Colony')).toBeVisible({ timeout: 10000 });
+      const teamContainer = page.locator('.team-selection-container');
+      await expect(teamContainer).toHaveCSS('display', 'grid');
+    }
+  });
+});
+
+test.describe('Accessibility', () => {
+  test('join game flow is keyboard navigable', async ({ page }) => {
+    await page.goto('/join');
+
+    // Tab to input
+    await page.keyboard.press('Tab');
+    await expect(page.locator('input[placeholder="Enter 6-character code"]')).toBeFocused();
+
+    // Type code
+    await page.keyboard.type('TEST01');
+
+    // Tab to button
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'Join Galaxy' })).toBeFocused();
+
+    // Submit with Enter
+    await page.keyboard.press('Enter');
+
+    // Wait for team selection
+    await expect(page.getByText('Select Your Colony')).toBeVisible({ timeout: 10000 });
+
+    // Tab through team cards
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab'); // Skip back button
+    const firstJoinButton = page.locator('.team-card').first().getByRole('button', { name: 'Join Team' });
+    await expect(firstJoinButton).toBeFocused();
+  });
+
+  test('has proper ARIA labels', async ({ page }) => {
+    await page.goto('/join');
+
+    // Check form labels
+    const codeInput = page.locator('input[placeholder="Enter 6-character code"]');
+    await expect(codeInput).toHaveAttribute('aria-label', 'Game code');
+
+    // Check button labels
+    const joinButton = page.getByRole('button', { name: 'Join Galaxy' });
+    await expect(joinButton).toBeVisible();
+  });
+
+  test('announces errors to screen readers', async ({ page }) => {
+    await page.goto('/join');
+
+    // Submit invalid code
+    await page.fill('input[placeholder="Enter 6-character code"]', 'BAD');
+    await page.click('button:has-text("Join Galaxy")');
+
+    // Error should be in an alert role
+    const error = page.locator('[role="alert"]');
+    await expect(error).toContainText('Please enter a valid 6-character game code');
+  });
+});

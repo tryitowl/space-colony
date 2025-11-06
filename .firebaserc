@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "space-colony-exchange-dev",
+    "production": "space-colony-exchange-prod"
+  }
+}

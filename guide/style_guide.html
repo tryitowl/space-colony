@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Colony Exchange - Style Guide & HUD Framework</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ==================== DESIGN TOKENS ==================== */
+        :root {
+            /* Primary Colors */
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #1a1a2e;
+            --tertiary-bg: #16213e;
+            
+            /* Glass Morphism */
+            --glass-bg: rgba(26, 26, 46, 0.3);
+            --glass-bg-hover: rgba(26, 26, 46, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border-hover: rgba(255, 255, 255, 0.2);
+            
+            /* HUD Specific */
+            --hud-panel: rgba(10, 10, 15, 0.85);
+            --hud-panel-active: rgba(26, 26, 46, 0.9);
+            --hud-border: rgba(0, 212, 255, 0.3);
+            --hud-border-active: rgba(0, 212, 255, 0.6);
+            --hud-glow: 0 0 20px rgba(0, 212, 255, 0.3);
+            --hud-glow-active: 0 0 30px rgba(0, 212, 255, 0.5);
+            
+            /* Accent Colors */
+            --accent-primary: #00d4ff;
+            --accent-secondary: #6c5ce7;
+            --accent-tertiary: #00ff88;
+            --accent-warning: #ff9500;
+            --accent-danger: #ff4757;
+            --accent-success: #00ff88;
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --text-accent: #00d4ff;
+            
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #6c5ce7 100%);
+            --gradient-secondary: linear-gradient(135deg, #6c5ce7 0%, #00ff88 100%);
+            --gradient-warning: linear-gradient(135deg, #ff9500 0%, #ff6b35 100%);
+            --gradient-danger: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+            --gradient-success: linear-gradient(135deg, #00ff88 0%, #00e676 100%);
+            
+            /* HUD Gradients */
+            --hud-gradient-panel: linear-gradient(145deg, rgba(26, 26, 46, 0.9) 0%, rgba(10, 10, 15, 0.95) 100%);
+            --hud-gradient-button: linear-gradient(145deg, rgba(0, 212, 255, 0.2) 0%, rgba(108, 92, 231, 0.2) 100%);
+            --hud-gradient-critical: linear-gradient(145deg, rgba(255, 71, 87, 0.3) 0%, rgba(255, 149, 0, 0.3) 100%);
+            
+            /* Shadows */
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.24);
+            --shadow-hard: 0 16px 48px rgba(0, 0, 0, 0.35);
+            --shadow-glow: 0 0 40px rgba(0, 212, 255, 0.15);
+            
+            /* Typography Scale */
+            --font-xs: 0.75rem;
+            --font-sm: 0.875rem;
+            --font-base: 1rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.25rem;
+            --font-2xl: 1.5rem;
+            --font-3xl: 1.875rem;
+            --font-4xl: 2.25rem;
+            --font-5xl: 3rem;
+            --font-6xl: 3.75rem;
+            
+            /* Spacing Scale */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.25rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-10: 2.5rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            --space-20: 5rem;
+            --space-24: 6rem;
+            
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 24px;
+            --radius-full: 50%;
+            
+            /* Transitions */
+            --transition-fast: 0.15s ease-out;
+            --transition-base: 0.3s ease-out;
+            --transition-slow: 0.5s ease-out;
+            
+            /* Z-Index Scale */
+            --z-dropdown: 1000;
+            --z-modal: 1050;
+            --z-tooltip: 1100;
+            --z-notification: 1150;
+        }
+
+        /* ==================== BASE STYLES ==================== */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: var(--font-base);
+        }
+
+        /* ==================== TYPOGRAPHY SYSTEM ==================== */
+        .font-primary {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Orbitron', monospace;
+        }
+
+        .font-mono {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        }
+
+        /* ==================== COMPONENT LIBRARY ==================== */
+
+        /* Glass Morphism Components */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            transition: all var(--transition-base);
+        }
+
+        .glass:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            transform: translateY(-2px);
+        }
+
+        /* HUD Components */
+        .hud-panel {
+            background: var(--hud-gradient-panel);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--hud-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--hud-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hud-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-primary);
+            opacity: 0.5;
+        }
+
+        /* Cyberpunk HUD Frame Elements */
+        .hud-frame {
+            position: relative;
+            padding: var(--space-6);
+            background: rgba(10, 10, 15, 0.9);
+            border: 2px solid var(--accent-primary);
+            border-radius: var(--radius-sm);
+        }
+
+        .hud-frame::before,
+        .hud-frame::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-warning);
+        }
+
+        .hud-frame::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .hud-frame::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
+        /* Corner Indicators */
+        .hud-corners {
+            position: relative;
+        }
+
+        .hud-corners::before,
+        .hud-corners::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-warning);
+            clip-path: polygon(0 0, 100% 0, 100% 30%, 30% 30%, 30% 100%, 0 100%);
+        }
+
+        .hud-corners::before {
+            top: var(--space-4);
+            left: var(--space-4);
+        }
+
+        .hud-corners::after {
+            bottom: var(--space-4);
+            right: var(--space-4);
+            transform: rotate(180deg);
+        }
+
+        /* Technical Grid Pattern */
+        .tech-grid {
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Scanning Lines */
+        .scan-lines {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-lines::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 1; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .hud-panel.active {
+            border-color: var(--hud-border-active);
+            box-shadow: var(--hud-glow-active);
+        }
+
+        .hud-panel.critical {
+            border-color: rgba(255, 71, 87, 0.6);
+            box-shadow: 0 0 30px rgba(255, 71, 87, 0.3);
+            animation: pulse-critical 2s infinite;
+        }
+
+        @keyframes pulse-critical {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 71, 87, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 71, 87, 0.6); }
+        }
+
+        /* Button System */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-6);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: var(--font-base);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-hud {
+            background: var(--hud-gradient-button);
+            color: var(--text-primary);
+            border: 1px solid var(--hud-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-hud:hover {
+            border-color: var(--hud-border-active);
+            background: linear-gradient(145deg, rgba(0, 212, 255, 0.3) 0%, rgba(108, 92, 231, 0.3) 100%);
+        }
+
+        .btn-critical {
+            background: var(--gradient-danger);
+            color: var(--text-primary);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 71, 87, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(255, 71, 87, 0.7); }
+        }
+
+        /* Resource Display Components */
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            background: var(--hud-panel);
+            border: 1px solid var(--hud-border);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition-base);
+        }
+
+        .resource-item.abundant {
+            border-color: rgba(0, 255, 136, 0.4);
+            background: linear-gradient(145deg, rgba(0, 255, 136, 0.1) 0%, var(--hud-panel) 100%);
+        }
+
+        .resource-item.moderate {
+            border-color: rgba(255, 149, 0, 0.4);
+            background: linear-gradient(145deg, rgba(255, 149, 0, 0.1) 0%, var(--hud-panel) 100%);
+        }
+
+        .resource-item.critical {
+            border-color: rgba(255, 71, 87, 0.6);
+            background: var(--hud-gradient-critical);
+            animation: pulse-critical 2s infinite;
+        }
+
+        .resource-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-lg);
+        }
+
+        .resource-value {
+            font-family: 'Orbitron', monospace;
+            font-size: var(--font-2xl);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .resource-label {
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Colony Card Component */
+        .colony-card {
+            background: var(--hud-gradient-panel);
+            border: 1px solid var(--hud-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .colony-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+        }
+
+        .colony-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hud-glow-active);
+            border-color: var(--hud-border-active);
+        }
+
+        .colony-card.available {
+            border-color: rgba(0, 255, 136, 0.6);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.2);
+        }
+
+        .colony-card.busy {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .colony-card.trading {
+            border-color: var(--accent-warning);
+            animation: trading-pulse 1.5s infinite;
+        }
+
+        @keyframes trading-pulse {
+            0%, 100% { 
+                border-color: rgba(255, 149, 0, 0.6);
+                box-shadow: 0 0 25px rgba(255, 149, 0, 0.3);
+            }
+            50% { 
+                border-color: rgba(255, 149, 0, 0.9);
+                box-shadow: 0 0 35px rgba(255, 149, 0, 0.5);
+            }
+        }
+
+        /* Trade Modal Components */
+        .trade-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: var(--z-modal);
+        }
+
+        .trade-content {
+            background: var(--hud-gradient-panel);
+            border: 1px solid var(--hud-border-active);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-8);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--hud-glow-active);
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: var(--space-6);
+            right: var(--space-6);
+            background: var(--hud-gradient-panel);
+            border: 1px solid var(--hud-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4) var(--space-6);
+            box-shadow: var(--shadow-medium);
+            z-index: var(--z-notification);
+            animation: slide-in 0.3s ease-out;
+        }
+
+        @keyframes slide-in {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-color: rgba(0, 255, 136, 0.6);
+            background: linear-gradient(145deg, rgba(0, 255, 136, 0.1) 0%, var(--hud-panel) 100%);
+        }
+
+        .notification.warning {
+            border-color: rgba(255, 149, 0, 0.6);
+            background: linear-gradient(145deg, rgba(255, 149, 0, 0.1) 0%, var(--hud-panel) 100%);
+        }
+
+        .notification.danger {
+            border-color: rgba(255, 71, 87, 0.6);
+            background: linear-gradient(145deg, rgba(255, 71, 87, 0.1) 0%, var(--hud-panel) 100%);
+        }
+
+        /* Timer Components */
+        .timer-display {
+            font-family: 'Orbitron', monospace;
+            font-size: var(--font-4xl);
+            font-weight: 700;
+            text-align: center;
+            color: var(--accent-primary);
+            position: relative;
+            background: rgba(10, 10, 15, 0.9);
+            padding: var(--space-4) var(--space-6);
+            border: 2px solid var(--accent-primary);
+            border-radius: var(--radius-sm);
+        }
+
+        .timer-display::before,
+        .timer-display::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-warning);
+        }
+
+        .timer-display::before {
+            top: -4px;
+            left: -4px;
+        }
+
+        .timer-display::after {
+            bottom: -4px;
+            right: -4px;
+        }
+
+        /* Circular Progress Timer */
+        .timer-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--accent-primary) 0deg,
+                var(--accent-warning) 120deg,
+                var(--accent-danger) 240deg,
+                var(--accent-primary) 360deg
+            );
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-circle::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--accent-warning);
+            border-radius: 50%;
+        }
+
+        .timer-inner {
+            background: var(--primary-bg);
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-size: var(--font-2xl);
+            font-weight: 700;
+            color: var(--accent-danger);
+        }
+
+        /* Percentage Display */
+        .percentage-display {
+            position: relative;
+            font-family: 'Orbitron', monospace;
+            font-size: var(--font-5xl);
+            font-weight: 900;
+            color: var(--text-primary);
+            text-shadow: 0 0 20px var(--accent-warning);
+        }
+
+        .percentage-bars {
+            display: flex;
+            gap: 2px;
+            margin-bottom: var(--space-2);
+        }
+
+        .percentage-bar {
+            width: 4px;
+            height: 20px;
+            background: var(--accent-primary);
+            opacity: 0.3;
+        }
+
+        .percentage-bar.active {
+            opacity: 1;
+            box-shadow: 0 0 8px var(--accent-primary);
+        }
+
+        .timer-display.warning {
+            color: var(--accent-warning);
+            animation: timer-warning 1s infinite;
+        }
+
+        .timer-display.critical {
+            color: var(--accent-danger);
+            animation: timer-critical 0.5s infinite;
+        }
+
+        @keyframes timer-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes timer-critical {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        /* Leaderboard Components */
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-3) var(--space-4);
+            background: var(--hud-panel);
+            border: 1px solid var(--hud-border);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-2);
+            transition: all var(--transition-base);
+        }
+
+        .leaderboard-item.own-team {
+            border-color: var(--accent-primary);
+            background: linear-gradient(145deg, rgba(0, 212, 255, 0.1) 0%, var(--hud-panel) 100%);
+        }
+
+        .leaderboard-rank {
+            font-family: 'Orbitron', monospace;
+            font-size: var(--font-xl);
+            font-weight: 700;
+            color: var(--accent-primary);
+            min-width: 40px;
+        }
+
+        /* Achievement Badge */
+        .achievement-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            background: var(--gradient-success);
+            border-radius: var(--radius-full);
+            font-size: var(--font-sm);
+            font-weight: 600;
+            color: var(--primary-bg);
+            animation: achievement-appear 0.5s ease-out;
+        }
+
+        @keyframes achievement-appear {
+            from {
+                opacity: 0;
+                transform: scale(0.5) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Data Stream & Code Display */
+        .code-display {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            background: rgba(10, 10, 15, 0.95);
+            border: 2px solid var(--accent-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-display::before {
+            content: 'CODE/048';
+            position: absolute;
+            top: var(--space-2);
+            right: var(--space-4);
+            font-size: var(--font-xs);
+            color: var(--accent-warning);
+            opacity: 0.8;
+        }
+
+        .code-display::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-warning));
+        }
+
+        /* System Status Display */
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: rgba(10, 10, 15, 0.8);
+            border: 1px solid var(--hud-border);
+            border-radius: var(--radius-lg);
+            position: relative;
+        }
+
+        .system-status.online {
+            border-color: var(--accent-success);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .system-status.offline {
+            border-color: var(--accent-danger);
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.2);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-success);
+            box-shadow: 0 0 10px var(--accent-success);
+            animation: pulse-status 2s infinite;
+        }
+
+        .status-indicator.offline {
+            background: var(--accent-danger);
+            box-shadow: 0 0 10px var(--accent-danger);
+        }
+
+        @keyframes pulse-status {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Data Visualization */
+        .data-chart {
+            background: rgba(10, 10, 15, 0.9);
+            border: 1px solid var(--accent-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-chart::before {
+            content: 'REC ●';
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-4);
+            color: var(--accent-danger);
+            font-size: var(--font-sm);
+            font-weight: 700;
+        }
+
+        .chart-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(0deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.1) 1px, transparent 1px, transparent 20px),
+                repeating-linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.1) 1px, transparent 1px, transparent 20px);
+        }
+
+        /* Warning/Alert System */
+        .alert-panel {
+            background: linear-gradient(145deg, rgba(255, 71, 87, 0.1) 0%, rgba(10, 10, 15, 0.95) 100%);
+            border: 2px solid var(--accent-danger);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            position: relative;
+            animation: alert-pulse 1s infinite;
+        }
+
+        .alert-panel::before {
+            content: '!';
+            position: absolute;
+            top: var(--space-3);
+            right: var(--space-4);
+            width: 24px;
+            height: 24px;
+            background: var(--accent-warning);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-bg);
+            font-weight: 900;
+        }
+
+        @keyframes alert-pulse {
+            0%, 100% { 
+                border-color: var(--accent-danger);
+                box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+            }
+            50% { 
+                border-color: var(--accent-warning);
+                box-shadow: 0 0 30px rgba(255, 149, 0, 0.4);
+            }
+        }
+
+        /* Responsive Grid System */
+        .grid {
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
+
+        /* ==================== DEMO LAYOUT ==================== */
+        .style-guide {
+            padding: var(--space-8);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: var(--space-24);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: var(--font-3xl);
+            font-weight: 700;
+            margin-bottom: var(--space-8);
+            color: var(--accent-primary);
+            border-bottom: 2px solid var(--hud-border);
+            padding-bottom: var(--space-4);
+        }
+
+        .subsection {
+            margin-bottom: var(--space-12);
+        }
+
+        .subsection-title {
+            font-family: 'Orbitron', monospace;
+            font-size: var(--font-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-6);
+            color: var(--text-primary);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .color-swatch {
+            padding: var(--space-6);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .component-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .demo-panel {
+            background: var(--secondary-bg);
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .style-guide {
+                padding: var(--space-4);
+            }
+            
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .component-showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="style-guide">
+        <!-- Header -->
+        <div class="section">
+            <h1 style="font-family: 'Orbitron', monospace; font-size: var(--font-6xl); text-align: center; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: var(--space-8);">
+                Space Colony Exchange
+            </h1>
+            <p style="text-align: center; font-size: var(--font-xl); color: var(--text-secondary); margin-bottom: var(--space-16);">
+                Complete Style Guide & HUD Framework
+            </p>
+        </div>
+
+        <!-- Color Palette -->
+        <div class="section">
+            <h2 class="section-title">Color Palette</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Primary Colors</h3>
+                <div class="color-grid">
+                    <div class="color-swatch" style="background: var(--primary-bg);">
+                        <div style="margin-bottom: var(--space-2); font-weight: 600;">Primary Background</div>
+                        <code style="color: var(--text-secondary);">#0a0a0f</code>
+                    </div>
+                    <div class="color-swatch" style="background: var(--secondary-bg);">
+                        <div style="margin-bottom: var(--space-2); font-weight: 600;">Secondary Background</div>
+                        <code style="color: var(--text-secondary);">#1a1a2e</code>
+                    </div>
+                    <div class="color-swatch" style="background: var(--accent-primary);">
+                        <div style="margin-bottom: var(--space-2); font-weight: 600; color: var(--primary-bg);">Accent Primary</div>
+                        <code style="color: var(--primary-bg);">#00d4ff</code>
+                    </div>
+                    <div class="color-swatch" style="background: var(--accent-secondary);">
+                        <div style="margin-bottom: var(--space-2); font-weight: 600;">Accent Secondary</div>
+                        <code style="color: var(--text-secondary);">#6c5ce7</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">Status Colors</h3>
+                <div class="color-grid">
+                    <div class="color-swatch" style="background: var(--accent-success);">
+                        <div style="margin-bottom: var(--space-2); font-weight: 600; color: var(--primary-bg);">Success</div>
+                        <code style="color: var(--primary-bg);">#00ff88</code>
+                    </div>
+                    <div class="color-swatch" style="background: var(--accent-warning);">
+                        <div style="margin-bottom: var(--space-2); font-weight: 600; color: var(--primary-bg);">Warning</div>
+                        <code style="color: var(--primary-bg);">#ff9500</code>
+                    </div>
+                    <div class="color-swatch" style="background: var(--accent-danger);">
+                        <div style="margin-bottom: var(--space-2); font-weight: 600;">Danger</div>
+                        <code style="color: var(--text-secondary);">#ff4757</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="section">
+            <h2 class="section-title">Typography System</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Font Families</h3>
+                <div class="demo-panel">
+                    <div style="margin-bottom: var(--space-4);">
+                        <div style="font-family: 'Orbitron', monospace; font-size: var(--font-2xl); font-weight: 700;">Orbitron - Display Font</div>
+                        <code style="color: var(--text-secondary);">Used for headers, colony names, data displays</code>
+                    </div>
+                    <div style="margin-bottom: var(--space-4);">
+                        <div style="font-family: 'Inter', sans-serif; font-size: var(--font-2xl); font-weight: 600;">Inter - Body Font</div>
+                        <code style="color: var(--text-secondary);">Used for body text, UI elements</code>
+                    </div>
+                    <div>
+                        <div style="font-family: 'SF Mono', 'Monaco', 'Consolas', monospace; font-size: var(--font-2xl); font-weight: 500;">Monospace - Code Font</div>
+                        <code style="color: var(--text-secondary);">Used for technical data, codes</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">Font Scale</h3>
+                <div class="demo-panel">
+                    <div style="font-size: var(--font-6xl); font-family: 'Orbitron', monospace; margin-bottom: var(--space-2);">Hero Heading (3.75rem)</div>
+                    <div style="font-size: var(--font-4xl); font-family: 'Orbitron', monospace; margin-bottom: var(--space-2);">Section Heading (2.25rem)</div>
+                    <div style="font-size: var(--font-2xl); font-weight: 600; margin-bottom: var(--space-2);">Subsection (1.5rem)</div>
+                    <div style="font-size: var(--font-lg); margin-bottom: var(--space-2);">Large Text (1.125rem)</div>
+                    <div style="font-size: var(--font-base); margin-bottom: var(--space-2);">Body Text (1rem)</div>
+                    <div style="font-size: var(--font-sm); color: var(--text-secondary);">Small Text (0.875rem)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HUD Components -->
+        <div class="section">
+            <h2 class="section-title">Enhanced HUD Components</h2>
+
+            <div class="subsection">
+                <h3 class="subsection-title">Advanced HUD Frames</h3>
+                <div class="component-showcase">
+                    <div class="hud-frame hud-corners">
+                        <h4 style="margin-bottom: var(--space-4); font-family: 'Orbitron', monospace;">Cyberpunk Frame</h4>
+                        <p style="color: var(--text-secondary);">Corner-accented tactical display</p>
+                    </div>
+                    <div class="demo-panel tech-grid scan-lines" style="height: 120px; position: relative;">
+                        <h4 style="margin-bottom: var(--space-4); font-family: 'Orbitron', monospace;">Tech Grid + Scan</h4>
+                        <p style="color: var(--text-secondary);">Grid background with scanning animation</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">Circular Progress & Status</h3>
+                <div class="component-showcase">
+                    <div style="text-align: center;">
+                        <div class="timer-circle" style="margin: 0 auto var(--space-4);">
+                            <div class="timer-inner">05</div>
+                        </div>
+                        <p style="color: var(--text-secondary);">Countdown Timer</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="percentage-bars" style="justify-content: center; margin-bottom: var(--space-4);">
+                            <div class="percentage-bar active"></div>
+                            <div class="percentage-bar active"></div>
+                            <div class="percentage-bar active"></div>
+                            <div class="percentage-bar"></div>
+                            <div class="percentage-bar"></div>
+                        </div>
+                        <div class="percentage-display">23%</div>
+                        <p style="color: var(--text-secondary);">Status Indicator</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">System Status & Data</h3>
+                <div class="component-showcase">
+                    <div class="system-status online">
+                        <div class="status-indicator"></div>
+                        <div>
+                            <h4 style="font-family: 'Orbitron', monospace; margin-bottom: var(--space-1);">SYSTEM ONLINE</h4>
+                            <p style="color: var(--text-secondary); font-size: var(--font-sm);">All systems operational</p>
+                        </div>
+                    </div>
+                    <div class="code-display">
+                        <div style="font-size: var(--font-lg); color: var(--accent-primary); margin-bottom: var(--space-2);">CYBERPUNK</div>
+                        <div style="font-size: var(--font-sm); color: var(--text-secondary);">Classification: Alpha-7</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">Data Visualization</h3>
+                <div class="component-showcase">
+                    <div class="data-chart" style="height: 150px; position: relative;">
+                        <div class="chart-grid"></div>
+                        <div style="position: relative; z-index: 2; margin-top: var(--space-8);">
+                            <h4 style="font-family: 'Orbitron', monospace; margin-bottom: var(--space-2);">HEART RATE</h4>
+                            <div style="color: var(--accent-warning); font-size: var(--font-sm);">75 TIMES PER MINUTE</div>
+                        </div>
+                    </div>
+                    <div class="alert-panel">
+                        <h4 style="font-family: 'Orbitron', monospace; margin-bottom: var(--space-2); color: var(--accent-danger);">SYSTEM BUG</h4>
+                        <p style="color: var(--text-secondary); font-size: var(--font-sm);">A software bug is an error, flaw or fault in a computer program or system</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button System -->
+        <div class="section">
+            <h2 class="section-title">Button System</h2>
+            
+            <div class="component-showcase">
+                <div class="demo-panel">
+                    <h4 style="margin-bottom: var(--space-4);">Primary Buttons</h4>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+                        <button class="btn btn-primary">Start Trading</button>
+                        <button class="btn btn-hud">HUD Action</button>
+                        <button class="btn btn-critical">Emergency Action</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="section">
+            <h2 class="section-title">Notification System</h2>
+            
+            <div class="component-showcase">
+                <div class="notification success">
+                    <strong>Trade Successful!</strong><br>
+                    You received 5 Energy from Mining Colony Alpha
+                </div>
+                <div class="notification warning">
+                    <strong>Resource Warning</strong><br>
+                    Your oxygen levels are running low
+                </div>
+                <div class="notification danger">
+                    <strong>Critical Alert!</strong><br>
+                    Colony entering critical mode
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer Components -->
+        <div class="section">
+            <h2 class="section-title">Timer System</h2>
+            
+            <div class="component-showcase">
+                <div class="demo-panel" style="text-align: center;">
+                    <h4 style="margin-bottom: var(--space-4);">Normal Timer</h4>
+                    <div class="timer-display">05:24</div>
+                </div>
+                <div class="demo-panel" style="text-align: center;">
+                    <h4 style="margin-bottom: var(--space-4);">Warning Timer</h4>
+                    <div class="timer-display warning">01:15</div>
+                </div>
+                <div class="demo-panel" style="text-align: center;">
+                    <h4 style="margin-bottom: var(--space-4);">Critical Timer</h4>
+                    <div class="timer-display critical">00:23</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utility Classes -->
+        <div class="section">
+            <h2 class="section-title">Utility Classes</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">CSS Custom Properties Reference</h3>
+                <div class="demo-panel">
+                    <pre style="color: var(--text-secondary); font-family: monospace; line-height: 1.4; font-size: var(--font-sm);">
+/* Spacing Scale */
+--space-1: 0.25rem  --space-2: 0.5rem   --space-3: 0.75rem  --space-4: 1rem
+--space-5: 1.25rem  --space-6: 1.5rem   --space-8: 2rem     --space-10: 2.5rem
+--space-12: 3rem    --space-16: 4rem    --space-20: 5rem    --space-24: 6rem
+
+/* Border Radius */
+--radius-sm: 4px    --radius-md: 8px    --radius-lg: 12px   --radius-xl: 16px
+--radius-2xl: 24px  --radius-full: 50%
+
+/* Transitions */
+--transition-fast: 0.15s ease-out
+--transition-base: 0.3s ease-out  
+--transition-slow: 0.5s ease-out
+
+/* HUD Specific */
+--hud-panel: rgba(10, 10, 15, 0.85)
+--hud-border: rgba(0, 212, 255, 0.3)
+--hud-glow: 0 0 20px rgba(0, 212, 255, 0.3)
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Notes -->
+        <div class="section">
+            <h2 class="section-title">Implementation Guidelines</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Key Principles</h3>
+                <div class="demo-panel">
+                    <ul style="color: var(--text-secondary); line-height: 1.8; padding-left: var(--space-6);">
+                        <li><strong style="color: var(--text-primary);">Mobile First:</strong> Design for mobile landscape orientation first</li>
+                        <li><strong style="color: var(--text-primary);">Performance:</strong> Use CSS transforms and opacity for animations</li>
+                        <li><strong style="color: var(--text-primary);">Accessibility:</strong> Maintain WCAG 2.1 AA contrast ratios</li>
+                        <li><strong style="color: var(--text-primary);">Consistency:</strong> Use design tokens and avoid magic numbers</li>
+                        <li><strong style="color: var(--text-primary);">Progressive Enhancement:</strong> Core functionality works without advanced CSS</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-title">React Component Structure</h3>
+                <div class="demo-panel">
+                    <pre style="color: var(--text-secondary); font-family: monospace; font-size: var(--font-sm); line-height: 1.4;">
+// Example HUD Panel Component
+const HUDPanel = ({ 
+  children, 
+  variant = 'default', 
+  className = '' 
+}) => {
+  return (
+    &lt;div className={`hud-panel ${variant} ${className}`}&gt;
+      {children}
+    &lt;/div&gt;
+  );
+};
+
+// Example Resource Item Component  
+const ResourceItem = ({ 
+  icon, 
+  value, 
+  label, 
+  status = 'normal' 
+}) => {
+  return (
+    &lt;div className={`resource-item ${status}`}&gt;
+      &lt;div className="resource-icon"&gt;{icon}&lt;/div&gt;
+      &lt;div&gt;
+        &lt;div className="resource-value"&gt;{value}&lt;/div&gt;
+        &lt;div className="resource-label"&gt;{label}&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+};
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+{
+  "templates": {
+    "1": [
+      {
+        "type": "survey_report",
+        "title": "Resource Deposit Scan",
+        "content": "Geological surveys indicate rich {mineral_type} deposits in sector {grid_location}. Estimated yield: +{amount} per round.",
+        "baseValue": 75,
+        "applicableRounds": [2, 3],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 1
+      },
+      {
+        "type": "discovery",
+        "title": "Emergency Supply Cache",
+        "content": "Abandoned facility discovered containing {resource_list}. Location: {coordinates}. First-come-first-served basis.",
+        "baseValue": 100,
+        "applicableRounds": [1, 2],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 2
+      },
+      {
+        "type": "market_intel",
+        "title": "Trade Route Efficiency",
+        "content": "Analysis shows direct trades between {colony_type1} and {colony_type2} are 25% more efficient due to resource compatibility.",
+        "baseValue": 60,
+        "applicableRounds": [1, 2, 3],
+        "exclusivity": "shared"
+      }
+    ],
+    "2": [
+      {
+        "type": "crisis_warning",
+        "title": "System Maintenance Alert",
+        "content": "Critical infrastructure in {affected_colonies} showing signs of wear. Maintenance costs will double next round unless addressed.",
+        "baseValue": 120,
+        "applicableRounds": [3],
+        "exclusivity": "shared",
+        "minScoutLevel": 1
+      },
+      {
+        "type": "competitive",
+        "title": "Investment Intelligence",
+        "content": "{target_colony} has heavily invested in {investment_type}. This will impact {affected_resources} availability next round.",
+        "baseValue": 90,
+        "applicableRounds": [3, 4],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 2
+      },
+      {
+        "type": "market_intel",
+        "title": "Supply Chain Disruption",
+        "content": "Transport routes to {affected_regions} compromised. {resource_type} deliveries delayed, prices expected to rise 30%.",
+        "baseValue": 110,
+        "applicableRounds": [3],
+        "exclusivity": "shared"
+      },
+      {
+        "type": "discovery",
+        "title": "Technology Breakthrough",
+        "content": "Research breakthrough in {tech_area} unlocks new production methods. {benefits_description}",
+        "baseValue": 150,
+        "applicableRounds": [3, 4, 5],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 3
+      }
+    ],
+    "3": [
+      {
+        "type": "prediction",
+        "title": "Crisis Probability Analysis",
+        "content": "Advanced modeling suggests 85% probability of {crisis_type} affecting {target_colonies} in round {target_round}.",
+        "baseValue": 140,
+        "applicableRounds": [4, 5],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 2
+      },
+      {
+        "type": "alien",
+        "title": "First Contact Protocols",
+        "content": "Alien civilization detected. Technology exchange protocols available. They seek {requested_resources} in exchange for {offered_tech}.",
+        "baseValue": 200,
+        "applicableRounds": [3, 4, 5],
+        "exclusivity": "public"
+      },
+      {
+        "type": "competitive",
+        "title": "Alliance Formation",
+        "content": "Intelligence indicates {colony_list} forming strategic alliance against {threat}. Join requirements: {conditions}",
+        "baseValue": 160,
+        "applicableRounds": [4, 5],
+        "exclusivity": "shared",
+        "minScoutLevel": 2
+      },
+      {
+        "type": "discovery",
+        "title": "Ancient Technology Cache",
+        "content": "Alien artifact discovered with advanced {tech_type}. Requires {activation_cost} to activate. Benefits: {tech_benefits}",
+        "baseValue": 250,
+        "applicableRounds": [4, 5],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 3,
+        "maxDistribution": 1
+      }
+    ],
+    "4": [
+      {
+        "type": "strategy",
+        "title": "Victory Path Analysis",
+        "content": "Optimal victory conditions identified for {colony_type}: {strategy_details}. Implementation window: next round only.",
+        "baseValue": 180,
+        "applicableRounds": [5],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 2
+      },
+      {
+        "type": "alien",
+        "title": "Advanced Alien Technology",
+        "content": "Aliens offer exclusive {alien_tech_type} technology. Exchange rate: {exchange_terms}. Limited availability.",
+        "baseValue": 220,
+        "applicableRounds": [4, 5],
+        "exclusivity": "shared"
+      },
+      {
+        "type": "competitive",
+        "title": "Elimination Risk Analysis",
+        "content": "{vulnerable_colonies} showing critical resource shortages. Predicted elimination in {rounds_remaining} rounds unless aided.",
+        "baseValue": 130,
+        "applicableRounds": [5],
+        "exclusivity": "shared",
+        "minScoutLevel": 1
+      },
+      {
+        "type": "market_intel",
+        "title": "Final Market Surge",
+        "content": "End-game resource demand spike predicted. {resource_types} values will increase 50% in final round.",
+        "baseValue": 150,
+        "applicableRounds": [5],
+        "exclusivity": "shared"
+      }
+    ],
+    "5": [
+      {
+        "type": "endgame",
+        "title": "Victory Countdown",
+        "content": "Current leader: {leading_colony} with {point_total} points. Catch-up strategy for {player_colony}: {recommendations}",
+        "baseValue": 200,
+        "applicableRounds": [5],
+        "exclusivity": "exclusive",
+        "minScoutLevel": 1
+      },
+      {
+        "type": "urgent",
+        "title": "Last Chance Alert",
+        "content": "Final trade window active. Colonies {at_risk_list} require immediate assistance to avoid elimination.",
+        "baseValue": 180,
+        "applicableRounds": [5],
+        "exclusivity": "shared"
+      },
+      {
+        "type": "alien",
+        "title": "Alien Departure Warning",
+        "content": "Alien fleet preparing to depart. Final opportunity for technology exchange expires in {time_remaining}.",
+        "baseValue": 160,
+        "applicableRounds": [5],
+        "exclusivity": "public"
+      },
+      {
+        "type": "discovery",
+        "title": "Emergency Resource Boost",
+        "content": "Hidden emergency protocols activated. All colonies gain +50% resource generation this round.",
+        "baseValue": 120,
+        "applicableRounds": [5],
+        "exclusivity": "public"
+      }
+    ]
+  },
+  "placeholders": {
+    "mineral_type": ["rare minerals", "titanium alloys", "quantum crystals", "neutronium"],
+    "grid_location": ["Alpha-7", "Beta-3", "Gamma-9", "Delta-2", "Epsilon-5"],
+    "amount": ["10-15", "20-30", "5-10", "15-25"],
+    "resource_list": ["50 oxygen, 30 food", "40 water, 20 energy", "25 minerals, 15 tech components"],
+    "coordinates": ["47.3°N 122.1°W", "Sector 7-G", "Grid Reference A4B9"],
+    "colony_type1": ["Mining", "Agricultural", "Research", "Manufacturing"],
+    "colony_type2": ["Agricultural", "Manufacturing", "Mining", "Research"],
+    "affected_colonies": ["Mining stations", "Agricultural domes", "Research facilities", "Manufacturing plants"],
+    "target_colony": ["Mining Colony Alpha", "Agricultural Hub Beta", "Research Station Gamma"],
+    "investment_type": ["Scout Arrays", "Communication Systems", "Defense Systems", "Production Facilities"],
+    "affected_resources": ["mineral", "food", "tech component", "energy"],
+    "affected_regions": ["outer sectors", "central hub", "mining belt", "agricultural zones"],
+    "resource_type": ["oxygen", "water", "food", "energy", "minerals"],
+    "tech_area": ["energy efficiency", "resource extraction", "life support", "manufacturing"],
+    "benefits_description": ["30% faster production", "50% resource efficiency", "Double output capacity"],
+    "crisis_type": ["solar flare", "meteor storm", "system failure", "alien encounter"],
+    "target_colonies": ["all mining colonies", "outer sector bases", "research stations"],
+    "target_round": ["4", "5"],
+    "requested_resources": ["100 rare minerals", "50 alien tech", "200 energy cells"],
+    "offered_tech": ["advanced life support", "quantum drives", "shield generators"],
+    "colony_list": ["Mining and Manufacturing", "Agricultural and Research", "All production colonies"],
+    "threat": ["resource scarcity", "alien incursion", "system-wide crisis"],
+    "conditions": ["minimum 100 resources", "defense level 2+", "scout array active"],
+    "tech_type": ["terraforming", "teleportation", "time dilation", "matter conversion"],
+    "activation_cost": ["100 energy", "50 rare minerals", "200 total resources"],
+    "tech_benefits": ["double all production", "instant resource transfer", "crisis immunity"],
+    "colony_type": ["your colony type", "mining colonies", "agricultural colonies", "research colonies"],
+    "strategy_details": ["focus on rare resources", "maximize trade volume", "hoard critical supplies"],
+    "alien_tech_type": ["antimatter reactor", "neural interface", "dimensional storage"],
+    "exchange_terms": ["100:1 minerals", "50:1 energy", "10:1 rare minerals"],
+    "vulnerable_colonies": ["Colony Delta", "Station Epsilon", "Base Zeta"],
+    "rounds_remaining": ["1", "2"],
+    "resource_types": ["rare minerals and alien tech", "oxygen and water", "all basic resources"],
+    "leading_colony": ["Mining Colony Prime", "Agricultural Nexus", "Research Alpha"],
+    "point_total": ["450", "380", "520", "410"],
+    "player_colony": ["your colony", "trailing colonies"],
+    "recommendations": ["trade all excess for rare minerals", "form alliance immediately", "focus on survival"],
+    "at_risk_list": ["Beta, Gamma, Delta", "all outer colonies", "resource-poor stations"],
+    "time_remaining": ["2 minutes", "90 seconds", "final 60 seconds"]
+  }
+}
