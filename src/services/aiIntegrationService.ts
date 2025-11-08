@@ -259,7 +259,9 @@ export class AIIntegrationService {
 
     // Add special rules for unique galaxy configurations
     if (galaxy.specialRules && galaxy.specialRules.length > 0) {
-      modifiers.specialRules = this.generateAISpecialRules(galaxy.specialRules);
+      // Note: generateAISpecialRules not yet implemented
+      // For now, pass through the special rules as-is
+      modifiers.specialRules = galaxy.specialRules as any;
     }
 
     return modifiers;
@@ -374,7 +376,7 @@ export class AIIntegrationService {
     const stats = {
       totalAI: 0,
       totalHuman: 0,
-      aiDifficulties: { easy: 0, medium: 0, hard: 0 }
+      aiDifficulties: { easy: 0, medium: 0, hard: 0, adaptive: 0 }
     };
 
     const aiService = this.aiColonyServices.get(sessionId);

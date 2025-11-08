@@ -271,7 +271,7 @@ export const TeamSelector: React.FC<TeamSelectorProps> = ({
         )}
       </AnimatePresence>
 
-      <style jsx>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
         }

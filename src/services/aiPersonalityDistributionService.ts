@@ -7,9 +7,9 @@
 
 import type {
   AIPersonalityType,
-  AIDifficulty,
-  ColonyType
+  AIDifficulty
 } from '../types/ai.types';
+import type { ColonyType } from '../types/base.types';
 import type { Galaxy } from '../types/galaxy.types';
 
 /**

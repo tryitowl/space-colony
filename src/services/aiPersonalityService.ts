@@ -1144,6 +1144,8 @@ _galaxyContext?: { totalTeams: number; galaxyTheme?: string }
         return { aggression: 1.0, risk: 1.0, learning: 1.0 };
       case 'hard':
         return { aggression: 1.3, risk: 1.2, learning: 1.5 };
+      case 'adaptive':
+        return { aggression: 1.0, risk: 1.0, learning: 1.2 };
     }
   }
 

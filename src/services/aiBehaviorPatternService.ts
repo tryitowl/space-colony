@@ -131,7 +131,7 @@ export class AIBehaviorPatternService {
     this.updatePatternsFromDecision(patterns, decision, outcome, personality.traits);
 
     // Update trait drift
-    this.updateTraitDrift(colonyId, decision, outcome, personality.traits);
+    this.updateTraitDrift(colonyId, decision, outcome);
 
     // Check for significant behavior changes
     this.detectBehaviorChanges(colonyId, patterns, personality);

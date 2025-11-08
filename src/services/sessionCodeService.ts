@@ -399,6 +399,43 @@ class SessionCodeService {
       averageLookupTime: 50 // Mock value, would track actual times in production
     };
   }
+
+  /**
+   * Save session code mapping (alias for reserveCode)
+   */
+  async saveSessionCodeMapping(mapping: { code: string; sessionId: string; isCustom?: boolean }): Promise<void> {
+    await this.reserveCode(mapping.code, mapping.sessionId, mapping.isCustom ?? false);
+  }
+
+  /**
+   * Look up code information (returns full code data instead of just sessionId)
+   */
+  async lookupCode(code: string): Promise<SessionCode | null> {
+    try {
+      // Check cache first
+      const cached = this.getCachedCode(code);
+      if (cached) {
+        return cached;
+      }
+
+      // Query Firestore
+      const codeDoc = await getDoc(doc(db, 'sessionCodes', code));
+
+      if (!codeDoc.exists()) {
+        return null;
+      }
+
+      const codeData = codeDoc.data() as SessionCode;
+
+      // Update cache
+      // this.updateCache(code, codeData);
+
+      return codeData.isActive && !this.isCodeExpired(codeData) ? codeData : null;
+    } catch (error) {
+      console.error('Error looking up code:', error);
+      return null;
+    }
+  }
 }
 
 // Export singleton instance

@@ -14,6 +14,7 @@ import {
 import { firestore as db } from '../firebase/config';
 import { galaxyService } from './galaxyService';
 import { sessionCodeService } from './sessionCodeService';
+import type { ColonyType } from '../types/base.types';
 import type {
   Galaxy,
   GalaxyConfiguration,
@@ -69,18 +70,28 @@ class SessionGalaxyService {
       // Generate teams for the galaxy
       const teams = await galaxyService.generateAndAssignTeams(galaxy.id, sessionId);
 
+      // Build team codes mapping
+      const teamCodes: Record<string, { teamId: string; teamName: string; colonyType: ColonyType }> = {};
+      teams.forEach(team => {
+        const teamCode = `${galaxyCode}-T${team.teamNumber}`;
+        teamCodes[teamCode] = {
+          teamId: team.id,
+          teamName: team.name,
+          colonyType: team.type
+        };
+      });
+
       galaxyMappings.push({
         galaxyId: galaxy.id,
         galaxyName: galaxy.name,
-        gameCode: galaxyCode,
-        teams: teams.map(t => t.id)
+        teamCodes
       });
     }
 
     // Create session code mapping
     const codeMapping: SessionCodeMapping = {
       sessionId,
-      galaxyMappings,
+      galaxyMappings: galaxyMappings as any,
       masterCode,
       createdAt: Date.now()
     };
@@ -324,7 +335,7 @@ class SessionGalaxyService {
       let galaxyTotalScore = 0;
       
       for (const team of teams) {
-        const teamScore = this.calculateTeamScore(team, config.victoryConditions || []);
+        const teamScore = this.calculateTeamScore(team, config.victoryConditions as any || []);
         teamScores.push({
           teamId: team.id,
           teamName: team.name,

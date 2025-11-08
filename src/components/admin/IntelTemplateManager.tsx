@@ -160,7 +160,7 @@ export const IntelTemplateManager: React.FC<IntelTemplateManagerProps> = ({ onCl
                     key={index}
                     className="p-3 cursor-pointer hover:border-space-cyan/50"
                     onClick={() => setSelectedTemplate(template)}
-                    variant={selectedTemplate === template ? 'primary' : 'default'}
+                    variant={selectedTemplate === template ? 'active' : 'default'}
                   >
                     <div className="font-semibold">{template.title}</div>
                     <div className="text-sm text-space-text-secondary">

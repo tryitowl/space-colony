@@ -3,10 +3,6 @@ import { useGame } from '../../contexts/GameContext';
 import { GlassPanel } from './GlassPanel';
 import { Badge } from './Badge';
 import { ColonyAvatar } from './ColonyAvatar';
-import type {
-  TeamScore,
-  GameSession
-} from '../../types';
 
 interface LeaderboardPanelProps {
   maxEntries?: number;

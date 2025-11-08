@@ -8,6 +8,7 @@
 import {
   doc,
   getDoc,
+  setDoc,
   updateDoc,
   collection,
   query,
@@ -104,7 +105,10 @@ export default class FlexibleSessionService extends SessionService {
 
       // Load session code mapping if not present
       if (!detailedSession.sessionCodeMapping) {
-        detailedSession.sessionCodeMapping = await sessionGalaxyService.getSessionCodeMapping(sessionId);
+        const mapping = await sessionGalaxyService.getSessionCodeMapping(sessionId);
+        if (mapping) {
+          detailedSession.sessionCodeMapping = mapping;
+        }
       }
 
       return detailedSession;
@@ -132,9 +136,11 @@ export default class FlexibleSessionService extends SessionService {
       if (activeTeams.length > 0) {
         const resourceKeys = ['water', 'food', 'oxygen', 'energy', 'minerals', 'electronics'];
         resourceKeys.forEach(resource => {
-          const total = activeTeams.reduce((sum, team) => 
-            sum + (team.resources[resource as keyof typeof team.resources] || 0), 0
-          );
+          const total = activeTeams.reduce((sum, team) => {
+            const val = team.resources[resource as keyof typeof team.resources];
+            const numVal = typeof val === 'number' ? val : 0;
+            return sum + numVal;
+          }, 0);
           averageResources[resource] = Math.round(total / activeTeams.length);
         });
       }
@@ -274,10 +280,11 @@ export default class FlexibleSessionService extends SessionService {
     const player: Player = {
       id: playerId,
       name: playerData.name,
-      isActive: true,
+      gameCode: 'TEMP',
+      isOnline: true,
+      lastSeen: Date.now(),
       joinedAt: Date.now(),
-      role: playerData.role || 'player',
-      preferences: playerData.preferences
+      role: (playerData.role as any) || 'player'
     };
 
     // Add player to team
@@ -459,8 +466,8 @@ export default class FlexibleSessionService extends SessionService {
     if (includeRealTimeData) {
       try {
         const realtimeSnapshot = await new Promise((resolve, reject) => {
-          const ref = realtimeDb.ref(`sessions/${sessionId}/live`);
-          ref.once('value', resolve, reject);
+          const dbRef = ref(realtimeDb, `sessions/${sessionId}/live`);
+          onValue(dbRef, resolve, reject, { onlyOnce: true });
         });
         realTimeData = (realtimeSnapshot as any).val();
       } catch (error) {
@@ -559,7 +566,7 @@ export default class FlexibleSessionService extends SessionService {
     };
 
     // Save to archives collection
-    await doc(firestore, 'archives', sessionId).set(archiveDoc);
+    await setDoc(doc(firestore, 'archives', sessionId), archiveDoc);
 
     // Mark original session as archived
     await updateDoc(doc(firestore, 'sessions', sessionId), {

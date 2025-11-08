@@ -170,7 +170,7 @@ export async function getServicesForSession(sessionId: string) {
  * Initialize services for the application
  */
 export async function initializeServices(config?: Partial<ServiceConfig>): Promise<void> {
-  await ServiceLocator.initialize(config);
+  await ServiceLocator.initialize(config as ServiceConfig);
 }
 
 /**

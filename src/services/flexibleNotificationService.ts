@@ -8,6 +8,7 @@
 import {
   doc,
   setDoc,
+  updateDoc,
   collection,
   query,
   where,
@@ -470,7 +471,7 @@ export default class FlexibleNotificationService extends notificationService {
     notificationId: string,
     teamId: string
   ): Promise<void> {
-    await doc(firestore, 'sessions', sessionId, 'notifications', notificationId).update({
+    await updateDoc(doc(firestore, 'sessions', sessionId, 'notifications', notificationId), {
       isRead: true,
       readAt: Timestamp.now(),
       readBy: teamId

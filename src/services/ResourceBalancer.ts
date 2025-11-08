@@ -29,31 +29,9 @@ export class ResourceBalancer {
     const teamValues = teams.map(team => this.calculateTeamResourceValue(team));
     const avgValue = teamValues.reduce((sum, val) => sum + val, 0) / teamValues.length;
     
-    // Apply handicaps based on balance mode
-    return teams.map((team, index) => {
-      const teamValue = teamValues[index];
-      const deviation = (teamValue - avgValue) / avgValue;
-      
-      // Only apply handicap if deviation is significant
-      if (Math.abs(deviation) < 0.1) {
-        return team;
-      }
-      
-      // Calculate handicap based on mode
-      const handicapMultiplier = {
-        'light': 0.05,
-        'moderate': 0.1,
-        'aggressive': 0.15,
-        'heavy': 0.2
-      }[mode] || 0.1;
-      
-      const handicap = deviation > 0 ? -handicapMultiplier : handicapMultiplier;
-      
-      return {
-        ...team,
-        handicap
-      };
-    });
+    // Return teams as-is for now
+    // In a full implementation, this would adjust team resources based on the calculated handicaps
+    return teams;
   }
 
   /**

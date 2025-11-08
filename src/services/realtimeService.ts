@@ -1,8 +1,7 @@
 import { notificationService } from './notificationService';
-import { sessionService } from './sessionService';
 import { teamDataService } from './teamDataService';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { firestore as db } from '../firebase/config';
 
 /**
  * Service for real-time updates
@@ -20,7 +19,7 @@ export class RealtimeService {
 
   static async sendNotification(sessionId: string, notification: any): Promise<void> {
     // Delegate to notification service
-    return notificationService.sendNotification(
+    await notificationService.sendNotification(
       sessionId,
       notification.recipientId || sessionId,
       notification

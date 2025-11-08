@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
-import type { GameSession, Colony, TradeOffer, Resources, Investments } from '../types';
+import type { GameSession, Colony, TradeOffer, Resources, Investments, ColonyType } from '../types';
 import { GameService } from '../services/GameService';
 import { TradingService } from '../services/tradingService';
 import { GameEngineService } from '../services/gameEngineService';
@@ -195,7 +195,20 @@ export const GameProvider: React.FC<GameProviderProps> = ({
             },
             onGameComplete: (finalScores) => {
               console.log('Game completed:', finalScores);
-              dispatch({ type: 'SET_LEADERBOARD', payload: finalScores as LeaderboardEntry[] });
+              // Map TeamScore to LeaderboardEntry
+              const leaderboardEntries: LeaderboardEntry[] = finalScores.map((score, index) => ({
+                rank: index + 1,
+                previousRank: index + 1, // Same as current for game complete
+                teamId: score.teamId,
+                teamName: score.teamName,
+                colonyType: score.colonyType,
+                currentScore: (score as any).totalScore || score.resourceScore || 0,
+                previousScore: (score as any).totalScore || score.resourceScore || 0,
+                trend: 'same' as const,
+                change: 0,
+                isEliminated: false
+              }));
+              dispatch({ type: 'SET_LEADERBOARD', payload: leaderboardEntries });
             },
             onTeamEliminated: (teamId, round) => {
               console.log('Team eliminated:', teamId, round);

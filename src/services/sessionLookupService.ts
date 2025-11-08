@@ -219,16 +219,16 @@ class SessionLookupService {
     
     for (const team of sessionTeams) {
       const currentPlayers = team.players?.length || 0;
-      const maxPlayers = team.maxPlayers || 4;
-      
+      const maxPlayers = (team as any).maxPlayers || 4;
+
       teams.push({
         id: team.id,
         name: team.name,
         type: team.type || 'standard',
-        colonyType: team.colonyType,
+        colonyType: (team as any).colonyType || team.type,
         currentPlayers,
         maxPlayers,
-        isAvailable: currentPlayers < maxPlayers && !team.isEliminated
+        isAvailable: currentPlayers < maxPlayers && !(team as any).isEliminated
       });
     }
 

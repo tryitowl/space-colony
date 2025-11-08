@@ -1,6 +1,6 @@
 import { doc, updateDoc, setDoc, getDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { ref, set, onValue, off } from 'firebase/database';
-import { db, rtdb } from '../firebase/config';
+import { firestore as db, realtimeDb as rtdb } from '../firebase/config';
 import { notificationService } from './notificationService';
 import type { Colony } from '../types';
 
@@ -226,10 +226,10 @@ class GalaxyStateService {
         }
 
         // Add to team's notification feed
-        await notificationService.sendNotification({
+        await notificationService.sendNotification(sessionId, team.id, {
           recipientId: team.id,
           recipientType: 'team',
-          type: 'announcement',
+          type: 'system',
           title: `📢 ${announcement.priority === 'critical' ? 'CRITICAL: ' : ''}Announcement`,
           message: announcement.message,
           priority: announcement.priority === 'critical' ? 'high' : 'medium',
@@ -238,7 +238,7 @@ class GalaxyStateService {
             sentBy: announcement.sentBy,
             persistent: announcement.persistent
           }
-        });
+        } as any);
       });
 
       await Promise.all(notificationPromises);
@@ -350,14 +350,14 @@ class GalaxyStateService {
       
       const notificationPromises = teamsSnapshot.docs.map(teamDoc => {
         const team = teamDoc.data() as Colony;
-        return notificationService.sendNotification({
+        return notificationService.sendNotification(sessionId, team.id, {
           recipientId: team.id,
           recipientType: 'team',
           type: 'system',
           title,
           message,
           priority: priority === 'warning' ? 'high' : 'medium'
-        });
+        } as any);
       });
 
       await Promise.all(notificationPromises);
@@ -383,7 +383,7 @@ class GalaxyStateService {
     });
 
     // Store listener reference for cleanup
-    this.stateListeners.set(galaxyId, () => off(stateRef, listener));
+    this.stateListeners.set(galaxyId, () => off(stateRef));
   }
 
   /**

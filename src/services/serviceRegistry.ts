@@ -85,7 +85,7 @@ export class ServiceRegistry {
    */
   static async initializeForSession(sessionId: string): Promise<ServiceRegistry> {
     const services = await ServiceFactory.getServiceForSession(sessionId);
-    const isFlexible = await services.gameService.isFlexibleSession?.(sessionId) || false;
+    const isFlexible = await (services.gameService as any).isFlexibleSession?.(sessionId) || false;
     
     const config: ServiceConfig = {
       isFlexibleMode: isFlexible,

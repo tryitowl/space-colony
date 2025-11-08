@@ -16,26 +16,26 @@ import { sessionGalaxyService } from './sessionGalaxyService';
 import { TeamGenerationService } from './teamGenerationService';
 import { sessionCodeService } from './sessionCodeService';
 import { configurationValidationService } from './configurationValidationService';
-import { AnalyticsService, analyticsService } from './analyticsService';
-import { ScoringService, scoringService } from './scoringService';
+import { AnalyticsService } from './analyticsService';
+import { ScoringService } from './scoringService';
 import FlexibleScoringService from './flexibleScoringService';
 import { notificationService } from './notificationService';
 import FlexibleNotificationService from './flexibleNotificationService';
 import { AuthService } from './authService';
-import { AdminAuthService, adminAuthService } from './adminAuthService';
+import { AdminAuthService } from './adminAuthService';
 import { AIColonyService } from './aiColonyService';
 import { AIIntegrationService } from './aiIntegrationService';
 import { AIStrategyService } from './aiStrategyService';
-import { AlienTradingService, alienTradingService } from './alienTradingService';
-import { EventSystemService, eventSystemService } from './eventSystemService';
-import { GameEngineService, gameEngineService } from './gameEngineService';
+import { AlienTradingService } from './alienTradingService';
+import { EventSystemService } from './eventSystemService';
+import { GameEngineService } from './gameEngineService';
 import { intelGenerationService } from './intelGenerationService';
-import { InvestmentService, investmentService } from './investmentService';
-import { MarketFluctuationService, marketFluctuationService } from './marketFluctuationService';
-import { ResourceManagementService, resourceManagementService } from './resourceManagementService';
-import { RoleService, roleService } from './roleService';
-import { RoundService, roundService } from './roundService';
-import { TradeAnalyticsService, tradeAnalyticsService } from './tradeAnalyticsService';
+import { InvestmentService } from './investmentService';
+import { MarketFluctuationService } from './marketFluctuationService';
+import { ResourceManagementService } from './resourceManagementService';
+import { RoleService } from './roleService';
+import { RoundService } from './roundService';
+import { TradeAnalyticsService } from './tradeAnalyticsService';
 
 /**
  * Service configuration options
@@ -56,32 +56,32 @@ export interface ServiceInstances {
   gameService: typeof GameService | typeof FlexibleGameService;
   tradingService: typeof TradingService | typeof FlexibleTradingService;
   sessionService: typeof SessionService | typeof FlexibleSessionService;
-  scoringService: typeof scoringService | typeof FlexibleScoringService;
+  scoringService: typeof ScoringService | typeof FlexibleScoringService;
   notificationService?: typeof notificationService | typeof FlexibleNotificationService;
   galaxyService?: typeof galaxyService;
   sessionGalaxyService?: typeof sessionGalaxyService;
   teamGenerationService?: typeof TeamGenerationService;
   sessionCodeService?: typeof sessionCodeService;
   configurationValidationService?: typeof configurationValidationService;
-  analyticsService?: typeof analyticsService;
+  analyticsService?: typeof AnalyticsService;
   authService: typeof AuthService;
-  adminAuthService?: typeof adminAuthService;
+  adminAuthService?: typeof AdminAuthService;
   aiServices?: {
     colonyService: typeof AIColonyService;
     integrationService: typeof AIIntegrationService;
     strategyService: typeof AIStrategyService;
   };
   gameplayServices: {
-    alienTradingService: typeof alienTradingService;
-    eventSystemService: typeof eventSystemService;
-    gameEngineService: typeof gameEngineService;
+    alienTradingService: typeof AlienTradingService;
+    eventSystemService: typeof EventSystemService;
+    gameEngineService: typeof GameEngineService;
     intelService: typeof intelGenerationService;
-    investmentService: typeof investmentService;
-    marketFluctuationService: typeof marketFluctuationService;
-    resourceManagementService: typeof resourceManagementService;
-    roleService: typeof roleService;
-    roundService: typeof roundService;
-    tradeAnalyticsService: typeof tradeAnalyticsService;
+    investmentService: typeof InvestmentService;
+    marketFluctuationService: typeof MarketFluctuationService;
+    resourceManagementService: typeof ResourceManagementService;
+    roleService: typeof RoleService;
+    roundService: typeof RoundService;
+    tradeAnalyticsService: typeof TradeAnalyticsService;
   };
 }
 
@@ -125,23 +125,23 @@ export class ServiceFactory {
       gameService: config.isFlexibleMode ? FlexibleGameService : GameService,
       tradingService: config.isFlexibleMode ? FlexibleTradingService : TradingService,
       sessionService: config.isFlexibleMode ? FlexibleSessionService : SessionService,
-      scoringService: config.isFlexibleMode ? FlexibleScoringService : scoringService,
-      
+      scoringService: config.isFlexibleMode ? FlexibleScoringService : ScoringService,
+
       // Auth services (always included)
       authService: AuthService,
-      
+
       // Gameplay services (always included)
       gameplayServices: {
-        alienTradingService,
-        eventSystemService,
-        gameEngineService,
+        alienTradingService: AlienTradingService,
+        eventSystemService: EventSystemService,
+        gameEngineService: GameEngineService,
         intelService: intelGenerationService,
-        investmentService,
-        marketFluctuationService,
-        resourceManagementService,
-        roleService,
-        roundService,
-        tradeAnalyticsService
+        investmentService: InvestmentService,
+        marketFluctuationService: MarketFluctuationService,
+        resourceManagementService: ResourceManagementService,
+        roleService: RoleService,
+        roundService: RoundService,
+        tradeAnalyticsService: TradeAnalyticsService
       }
     };
 
@@ -161,7 +161,7 @@ export class ServiceFactory {
     }
 
     if (config.enableAnalytics) {
-      services.analyticsService = analyticsService;
+      services.analyticsService = AnalyticsService;
     }
 
     if (config.enableAI) {
@@ -174,7 +174,7 @@ export class ServiceFactory {
 
     // Add admin services if user has admin role
     if (this.shouldIncludeAdminServices()) {
-      services.adminAuthService = adminAuthService;
+      services.adminAuthService = AdminAuthService;
     }
 
     return services;
@@ -188,7 +188,7 @@ export class ServiceFactory {
     // For now, we'll include it if the auth service indicates admin access
     try {
       const currentUser = AuthService.getCurrentUser();
-      return currentUser?.role === 'admin' || currentUser?.role === 'facilitator';
+      return (currentUser as any)?.role === 'admin' || (currentUser as any)?.role === 'facilitator';
     } catch {
       return false;
     }
@@ -231,7 +231,7 @@ export class ServiceFactory {
   static createServiceProxy<T extends keyof ServiceInstances>(
     serviceName: T
   ): ServiceInstances[T] {
-    return new Proxy({} as ServiceInstances[T], {
+    return new Proxy({} as any, {
       get: (target, prop) => {
         // Get the current configuration from context or default
         const config = this.getCurrentConfig();
@@ -372,4 +372,3 @@ export function useService<T extends keyof ServiceInstances>(
 
 // Export everything
 export default ServiceFactory;
-export { ServiceInstances, ServiceConfig };

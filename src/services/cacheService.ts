@@ -28,7 +28,7 @@ export class CacheService {
     persistToStorage: true
   };
 
-  private constructor() {
+  protected constructor() {
     // Load persisted cache on initialization
     if (this.config.persistToStorage) {
       this.loadFromStorage();
@@ -386,8 +386,8 @@ export function InvalidateCache(patterns: string[]) {
       const result = await originalMethod.apply(this, args);
       
       // Invalidate matching cache entries
-      const cacheKeys = Array.from((cache as any).memoryCache.keys());
-      cacheKeys.forEach(key => {
+      const cacheKeys = Array.from((cache as any).memoryCache.keys()) as string[];
+      cacheKeys.forEach((key: string) => {
         if (patterns.some(pattern => key.includes(pattern))) {
           cache.delete(key);
         }

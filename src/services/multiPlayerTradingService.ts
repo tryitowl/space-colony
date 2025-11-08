@@ -270,7 +270,7 @@ export class MultiPlayerTradingService extends TradingService {
                 pendingTrade.proposedBy.id,
                 pendingTrade.proposedBy.name,
                 actualTradeId,
-                'approved',
+                'accepted',
                 pendingTrade.targetTeamId
               );
               
@@ -398,10 +398,14 @@ export class MultiPlayerTradingService extends TradingService {
 
     for (const [resource, amount] of Object.entries(trade.requestResources)) {
       if (typeof amount === 'number') {
-        initiatorChanges[resource as keyof Resources] = 
-          ((initiatorChanges[resource as keyof Resources] as any) || 0) + amount;
-        targetChanges[resource as keyof Resources] = 
-          ((targetChanges[resource as keyof Resources] as any) || 0) - amount;
+        const key = resource as keyof Resources;
+        // Only modify numeric resources
+        if (key !== 'marketIntel' && key !== 'surveyReports' && key !== 'crisisWarnings' && key !== 'intel') {
+          (initiatorChanges[key] as number) =
+            ((initiatorChanges[key] as any) || 0) + amount;
+          (targetChanges[key] as number) =
+            ((targetChanges[key] as any) || 0) - amount;
+        }
       }
     }
 

@@ -119,8 +119,8 @@ export const IntelItemCreator: React.FC<IntelItemCreatorProps> = ({
             variant="primary"
             size="sm"
             onClick={() => setIsCreating(true)}
-            icon={<Plus className="w-4 h-4" />}
           >
+            <Plus className="w-4 h-4 inline mr-2" />
             Create Intel
           </Button>
         )}

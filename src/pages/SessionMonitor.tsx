@@ -108,10 +108,9 @@ const SessionMonitorContent: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <StatusIndicator 
-                status={session.isActive ? 'online' : 'offline'} 
+              <StatusIndicator
+                status={session.isActive ? 'online' : 'offline'}
                 size="lg"
-                label={session.isActive ? 'Active' : 'Inactive'}
               />
             </div>
           </GlassPanel>

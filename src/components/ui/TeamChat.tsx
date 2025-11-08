@@ -27,7 +27,7 @@ export const TeamChat: React.FC<TeamChatProps> = ({
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {

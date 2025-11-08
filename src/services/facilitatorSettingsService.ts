@@ -264,11 +264,11 @@ class FacilitatorSettingsService {
 
       // Anonymize if required
       if (settings.anonymizeExports) {
-        if (filtered.playerName) {
-          filtered.playerName = `Player ${filtered.playerId?.substring(0, 8) || 'Unknown'}`;
+        if ('playerName' in filtered && filtered.playerName) {
+          (filtered as any).playerName = `Player ${(filtered as any).playerId?.substring(0, 8) || 'Unknown'}`;
         }
-        if (filtered.teamName) {
-          filtered.teamName = `Team ${filtered.teamId?.substring(0, 8) || 'Unknown'}`;
+        if ('teamName' in filtered && filtered.teamName) {
+          (filtered as any).teamName = `Team ${(filtered as any).teamId?.substring(0, 8) || 'Unknown'}`;
         }
       }
 

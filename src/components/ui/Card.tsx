@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import type { CardProps } from '../../types/ui';
+import type { CardProps, CardVariant } from '../../types/ui';
 import { cn } from '../../utils/cn';
 import { HUDFrame, type HUDColor } from './HUDFrame';
 
@@ -37,6 +37,15 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       'overflow-hidden',
     ];
 
+    // Map variant to HUDColor
+    const variantColorMap: Record<CardVariant, any> = {
+      primary: 'cyan',
+      secondary: 'blue',
+      success: 'green',
+      warning: 'amber',
+      danger: 'red',
+      ghost: 'none'
+    } as const satisfies Record<CardVariant, HUDColor>;
 
     // Interactive states
     const interactiveClasses = [
@@ -47,7 +56,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 
     return (
       <HUDFrame
-        color={'cyan' as HUDColor}
+        color={variantColorMap[variant]}
         className={cn(
           ...baseClasses,
           ...interactiveClasses,

@@ -66,22 +66,19 @@ export class SessionService {
           round1Strategy: 3 * 60 * 1000,
           round2Trading: 5 * 60 * 1000,
           round2Strategy: 2 * 60 * 1000,
+          milestoneBreak: 5 * 60 * 1000,
           round3Trading: 5 * 60 * 1000,
           round3Strategy: 2 * 60 * 1000,
           round4Trading: 4 * 60 * 1000,
           round4Strategy: 1 * 60 * 1000,
           round5Trading: 20 * 60 * 1000
         },
-        allowLatePlayers: true,
-        startWithAI: false,
-        displayLeaderboard: true,
-        allowTeamSwitching: false
+        enableAlienContact: true,
+        customIntel: []
       },
-      startTime: 0,
-      endTime: 0,
       code: '', // Will be generated
       createdAt: Date.now()
-    };
+    } as GameSession;
 
     // Store session
     await setDoc(doc(db, 'sessions', sessionId), sessionData);
@@ -330,7 +327,7 @@ export class SessionService {
 
     const teamsByGalaxy = new Map<string, Colony[]>();
 
-    if (session.galaxyMode === 'single') {
+    if ((session as any).galaxyMode === 'single') {
       const teams = await teamDataService.getSessionTeams(sessionId);
       teamsByGalaxy.set((session as any).primaryGalaxyId || 'main', teams);
     } else {
@@ -424,7 +421,7 @@ export class SessionService {
     };
 
     // Add galaxy-specific stats if multi-galaxy
-    if (session.galaxyMode === 'multi') {
+    if ((session as any).galaxyMode === 'multi') {
       stats.galaxyStats = await sessionGalaxyService.getMultiGalaxyStatistics(sessionId);
     }
 

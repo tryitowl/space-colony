@@ -127,7 +127,7 @@ export class notificationService {
     return this.sendNotification(sessionId, sessionId, {
       ...notification,
       targetType: 'session'
-    });
+    } as any);
   }
 }
 

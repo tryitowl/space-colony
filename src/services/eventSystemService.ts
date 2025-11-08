@@ -590,6 +590,116 @@ export class EventSystemService {
           }],
           teamContributionRequired: true
         }]
+      },
+      communication_blackout: {
+        title: "Communication Blackout",
+        description: "All communication systems have gone offline.",
+        baseDuration: 8 * 60 * 1000,
+        effects: [{
+          type: 'communication_loss',
+          duration: 6 * 60 * 1000,
+          parameters: { severity: 2 }
+        }],
+        resolutionOptions: [{
+          id: 'restore_comms',
+          title: "Restore Communications",
+          description: "Repair communication arrays using technical components.",
+          requirements: { techComponents: 3, energy: 4 },
+          timeLimit: 5 * 60 * 1000,
+          successEffects: [{
+            type: 'tech_advancement',
+            parameters: { advantage: 'improved_communications' }
+          }],
+          failureEffects: [{
+            type: 'trading_disabled',
+            parameters: { duration: 5 * 60 * 1000 }
+          }],
+          teamContributionRequired: false
+        }]
+      },
+      reactor_instability: {
+        title: "Reactor Instability",
+        description: "The main reactor is showing critical instability.",
+        baseDuration: 10 * 60 * 1000,
+        effects: [{
+          type: 'resource_drain',
+          duration: 8 * 60 * 1000,
+          parameters: {
+            resourceTypes: ['energy'],
+            drainRate: 2
+          }
+        }],
+        resolutionOptions: [{
+          id: 'stabilize_reactor',
+          title: "Stabilize Reactor",
+          description: "Use technical expertise to stabilize the reactor core.",
+          requirements: { techComponents: 4, alloys: 3 },
+          timeLimit: 7 * 60 * 1000,
+          successEffects: [{
+            type: 'resource_bonus',
+            parameters: { resources: { energy: 15 } }
+          }],
+          failureEffects: [{
+            type: 'elimination_risk',
+            parameters: { severity: 2 }
+          }],
+          teamContributionRequired: true
+        }]
+      },
+      life_support_failure: {
+        title: "Life Support Failure",
+        description: "Critical life support systems are failing.",
+        baseDuration: 12 * 60 * 1000,
+        effects: [{
+          type: 'resource_drain',
+          duration: 10 * 60 * 1000,
+          parameters: {
+            resourceTypes: ['oxygen', 'water'],
+            drainRate: 1.5
+          }
+        }],
+        resolutionOptions: [{
+          id: 'emergency_life_support',
+          title: "Emergency Life Support",
+          description: "Deploy backup life support systems.",
+          requirements: { oxygen: 5, water: 5, techComponents: 2 },
+          timeLimit: 9 * 60 * 1000,
+          successEffects: [{
+            type: 'immunity',
+            parameters: { duration: 15 * 60 * 1000 }
+          }],
+          failureEffects: [{
+            type: 'elimination_risk',
+            parameters: { severity: 3 }
+          }],
+          teamContributionRequired: false
+        }]
+      },
+      alien_interference: {
+        title: "Alien Interference",
+        description: "Unknown alien technology is interfering with all systems.",
+        baseDuration: 20 * 60 * 1000,
+        effects: [{
+          type: 'random_damage',
+          duration: 15 * 60 * 1000,
+          parameters: { severity: 2 }
+        }],
+        resolutionOptions: [{
+          id: 'alien_protocol',
+          title: "Alien Contact Protocol",
+          description: "Attempt to communicate and negotiate with the aliens.",
+          requirements: { techPatents: 2, researchData: 3 },
+          timeLimit: 12 * 60 * 1000,
+          successEffects: [{
+            type: 'tech_advancement',
+            parameters: { advantage: 'alien_technology' }
+          }],
+          failureEffects: [{
+            type: 'system_damage',
+            parameters: { severity: 2 }
+          }],
+          teamContributionRequired: true
+        }]
       }
     };
   }
@@ -597,20 +707,27 @@ export class EventSystemService {
   private scaleRequirements(requirements: Partial<Resources>, multiplier: number): Partial<Resources> {
     const scaled: Partial<Resources> = {};
     Object.entries(requirements).forEach(([resource, amount]) => {
-      if (amount) {
-        scaled[resource as keyof Resources] = Math.ceil(amount * multiplier) as any;
+      if (amount !== undefined && amount !== null) {
+        // Skip IntelItem[] types (marketIntel, surveyReports, crisisWarnings, intel)
+        if (Array.isArray(amount)) {
+          scaled[resource as keyof Resources] = amount as any;
+        } else if (typeof amount === 'number') {
+          scaled[resource as keyof Resources] = Math.ceil(amount * multiplier) as any;
+        }
       }
     });
     return scaled;
   }
 
   private validateResolutionRequirements(
-    requirements: Partial<Resources>, 
+    requirements: Partial<Resources>,
     contributed: Partial<Resources>
   ): boolean {
     return Object.entries(requirements).every(([resource, required]) => {
-      const contributedAmount = contributed[resource as keyof Resources] as number || 0;
-      return contributedAmount >= (required || 0);
+      const contributedVal = contributed[resource as keyof Resources];
+      const contributedAmount = typeof contributedVal === 'number' ? contributedVal : 0;
+      const requiredAmount = typeof required === 'number' ? required : 0;
+      return contributedAmount >= requiredAmount;
     });
   }
 
@@ -702,7 +819,7 @@ export class EventSystemService {
         }
 
         // Deduct but don't go below 0 (only for numeric resources)
-        if (typeof currentAmount === 'number') {
+        if (typeof currentAmount === 'number' && typeof deductAmount === 'number') {
           (updatedResources[resource as keyof Resources] as number) = Math.max(0, currentAmount - deductAmount);
         }
       }
@@ -724,7 +841,7 @@ export class EventSystemService {
       });
       
       // Send notification to team
-      await realtimeService.sendNotification(this.sessionId, {
+      await realtimeService.sendNotification(this.config.sessionId, {
         type: 'resource_change',
         title: 'Resources Deducted',
         message: `Resources have been deducted for crisis resolution`,
@@ -895,7 +1012,7 @@ export class EventSystemService {
     
     for (const teamId of crisisEvent.affectedTeams) {
       // Random damage to 1-3 resource types
-      const resourceTypes: (keyof Resources)[] = ['oxygen', 'food', 'water', 'energy', 'minerals', 'tech'];
+      const resourceTypes: (keyof Resources)[] = ['oxygen', 'food', 'water', 'energy', 'minerals', 'techComponents'];
       const affectedCount = Math.min(3, Math.floor(Math.random() * 3) + 1);
       const affectedResources = resourceTypes
         .sort(() => Math.random() - 0.5)
@@ -906,7 +1023,11 @@ export class EventSystemService {
       for (const resource of affectedResources) {
         // Damage based on severity (1-5 units per severity level)
         const damage = Math.floor(Math.random() * 5 + 1) * severity;
-        damageResources[resource] = damage;
+        const key = resource as keyof Resources;
+        // Only damage numeric resources
+        if (key !== 'marketIntel' && key !== 'surveyReports' && key !== 'crisisWarnings' && key !== 'intel') {
+          (damageResources[key] as number) = damage;
+        }
       }
       
       await this.deductResources(teamId, damageResources);
@@ -922,8 +1043,14 @@ export class EventSystemService {
           if (team) {
             const updatedResources: Partial<Resources> = {};
             for (const [resource, amount] of Object.entries(effect.parameters.resources)) {
-              const current = team.resources[resource as keyof Resources] || 0;
-              updatedResources[resource as keyof Resources] = current + (amount || 0);
+              const key = resource as keyof Resources;
+              // Only modify numeric resources
+              if (key !== 'marketIntel' && key !== 'surveyReports' && key !== 'crisisWarnings' && key !== 'intel') {
+                const currentVal = team.resources[key];
+                const current = typeof currentVal === 'number' ? currentVal : 0;
+                const amountVal = typeof amount === 'number' ? amount : 0;
+                (updatedResources[key] as number) = current + amountVal;
+              }
             }
             await teamDataService.updateTeamResources(teamId, updatedResources);
           }
@@ -955,7 +1082,7 @@ export class EventSystemService {
         const team = await teamDataService.getTeam(teamId);
         if (team) {
           await teamDataService.updateTeamResources(teamId, {
-            tech: (team.resources.tech || 0) + 10
+            techComponents: (team.resources.techComponents || 0) + 10
           });
         }
         break;

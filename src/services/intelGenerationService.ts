@@ -628,11 +628,11 @@ export class IntelGenerationService {
       const teams = teamsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       return {
-        teams: teams.map(team => ({ 
-          id: team.id, 
-          name: team.name || 'Unknown Colony', 
-          type: team.type || 'Unknown',
-          resources: team.resources || {}
+        teams: teams.map(team => ({
+          id: team.id,
+          name: (team as any).name || 'Unknown Colony',
+          type: (team as any).type || 'Unknown',
+          resources: (team as any).resources || {}
         })),
         colonyTypes: ['mining', 'agricultural', 'research', 'trade_hub', 'military', 'manufacturing'],
         resourceTypes: ['oxygen', 'food', 'water', 'energy', 'minerals', 'alloys', 'techComponents'],
@@ -691,9 +691,9 @@ export class IntelGenerationService {
   ): string | null {
     // Map of dynamic replacements based on session context
     const replacements = {
-      colony_a: this.getRandomElement(sessionContext.teams)?.name || null,
-      colony_b: this.getRandomElement(sessionContext.teams.filter((t: any) => t.id !== targetTeamId))?.name || null,
-      target_colony: this.getRandomElement(sessionContext.teams.filter((t: any) => t.id !== targetTeamId))?.name || null,
+      colony_a: (this.getRandomElement(sessionContext.teams) as any)?.name || null,
+      colony_b: (this.getRandomElement(sessionContext.teams.filter((t: any) => t.id !== targetTeamId)) as any)?.name || null,
+      target_colony: (this.getRandomElement(sessionContext.teams.filter((t: any) => t.id !== targetTeamId)) as any)?.name || null,
       resource_type: this.getRandomElement(sessionContext.resourceTypes),
       grid_location: this.getRandomElement(sessionContext.gridLocations),
       amount: String(Math.floor(Math.random() * 5) + 2),
@@ -707,7 +707,7 @@ export class IntelGenerationService {
       target_round: String(round + 1),
       requested_resources: this.generateResourceList(sessionContext.resourceTypes, 2),
       colony_list: this.generateColonyList(sessionContext.teams, 3),
-      leading_colony: this.getRandomElement(sessionContext.teams)?.name || null,
+      leading_colony: (this.getRandomElement(sessionContext.teams) as any)?.name || null,
       point_total: String(Math.floor(Math.random() * 1000) + 500),
       recommendations: this.getRandomElement(['increase trade volume', 'invest in production', 'form alliances']),
       at_risk_list: this.generateColonyList(sessionContext.teams, 2),

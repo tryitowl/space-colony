@@ -84,9 +84,12 @@ export const GalaxyConfigurationForm: React.FC<GalaxyConfigurationFormProps> = (
   // Update configuration when form changes
   useEffect(() => {
     const config: GalaxyConfiguration = {
-      galaxies: galaxies.map(g => ({
+      galaxies: galaxies.map((g, idx) => ({
         id: g.id,
         name: g.name,
+        code: String.fromCharCode(65 + idx).repeat(3), // AAA, BBB, CCC, etc.
+        participantCount: (g.teamCount - g.aiTeams) * g.playersPerTeam,
+        gameMode: g.aiTeams === 0 ? 'full_multiplayer' : (g.aiTeams === g.teamCount ? 'single_player' : 'mixed_mode'),
         description: `${g.teamCount} teams configuration`,
         totalTeams: g.teamCount,
         colonyTypes: g.colonyTypes,
@@ -99,8 +102,6 @@ export const GalaxyConfigurationForm: React.FC<GalaxyConfigurationFormProps> = (
       sharedMarketIntel,
       competitionMode,
       victoryConditions: selectedVictoryConditions
-        .map(id => VICTORY_CONDITIONS[id])
-        .filter(vc => vc !== undefined)
     };
 
     onConfigChange(config);
@@ -124,14 +125,14 @@ export const GalaxyConfigurationForm: React.FC<GalaxyConfigurationFormProps> = (
         teamCount: g.totalTeams || 4,
         playersPerTeam: Math.max(1, Math.floor(participantCount / (g.totalTeams || 4))),
         aiTeams: g.aiEnabled ? Math.floor((g.totalTeams || 4) * 0.2) : 0,
-        colonyTypes: g.colonyTypes,
+        colonyTypes: g.colonyTypes ?? ALL_COLONY_TYPES.slice(0, 6),
         teamStructureMode: (g.teamStructure || { mode: 'balanced' }).mode
       })));
-      
-      setCrossGalaxyTrading(config.crossGalaxyTrading);
-      setGlobalEvents(config.globalEvents);
-      setSharedMarketIntel(config.sharedMarketIntel);
-      setCompetitionMode(config.competitionMode);
+
+      setCrossGalaxyTrading(config.crossGalaxyTrading ?? false);
+      setGlobalEvents(config.globalEvents ?? true);
+      setSharedMarketIntel(config.sharedMarketIntel ?? true);
+      setCompetitionMode(config.competitionMode ?? 'individual');
       
       // Set victory conditions from template
       if (config.victoryConditions && config.victoryConditions.length > 0) {
@@ -192,13 +193,13 @@ export const GalaxyConfigurationForm: React.FC<GalaxyConfigurationFormProps> = (
       teamCount: g.totalTeams || 4,
       playersPerTeam: Math.max(1, Math.floor(participantCount / (g.totalTeams || 4))),
       aiTeams: g.aiEnabled ? Math.floor((g.totalTeams || 4) * 0.2) : 0,
-      colonyTypes: g.colonyTypes,
+      colonyTypes: g.colonyTypes ?? ALL_COLONY_TYPES.slice(0, 6),
       teamStructureMode: (g.teamStructure || { mode: 'balanced' }).mode
     })));
 
-    setCrossGalaxyTrading(config.crossGalaxyTrading);
-    setGlobalEvents(config.globalEvents);
-    setSharedMarketIntel(config.sharedMarketIntel);
+    setCrossGalaxyTrading(config.crossGalaxyTrading ?? false);
+    setGlobalEvents(config.globalEvents ?? true);
+    setSharedMarketIntel(config.sharedMarketIntel ?? true);
   };
 
   return (

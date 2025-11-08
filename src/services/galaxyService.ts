@@ -22,10 +22,9 @@ import type {
   ResourceModifiers,
   SpecialRule,
   EnhancedColony,
-  TeamAssignment,
-  DEFAULT_GALAXY_CONFIGS,
-  validateGalaxyConfig
+  TeamAssignment
 } from '../types/galaxy.types';
+import { DEFAULT_GALAXY_CONFIGS, validateGalaxyConfig } from '../types/galaxy.types';
 import type { ColonyType } from '../types/base.types';
 
 /**
@@ -49,7 +48,7 @@ class GalaxyService {
     
     const baseConfig = templateName ? DEFAULT_GALAXY_CONFIGS[templateName] : {};
     
-    const galaxy: Galaxy = {
+    const galaxy = {
       ...baseConfig,
       id: galaxyId,
       name: galaxyConfig.name || `Galaxy ${index + 1}`,
@@ -62,7 +61,7 @@ class GalaxyService {
       aiEnabled: galaxyConfig.aiEnabled || false,
       aiDifficulty: galaxyConfig.aiDifficulty,
       ...galaxyConfig,
-    };
+    } as Galaxy;
 
     // Validate galaxy configuration
     this.validateGalaxy(galaxy);

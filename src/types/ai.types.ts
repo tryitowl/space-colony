@@ -2,7 +2,7 @@ import type { ColonyType, Resources } from './base.types';
 import type { Colony } from './index';
 
 // AI difficulty levels affecting decision speed and quality
-export type AIDifficulty = 'easy' | 'medium' | 'hard';
+export type AIDifficulty = 'easy' | 'medium' | 'hard' | 'adaptive';
 
 // AI personality types for varied gameplay
 export type AIPersonalityType = 
@@ -192,6 +192,15 @@ export const DEFAULT_DIFFICULTY_PARAMS: Record<AIDifficulty, Partial<AIStrategyP
     decisionDelayMs: { min: 1000, max: 5000 },
     minResourceBuffer: 1.5,
     maxTradeSize: 0.5
+  },
+  adaptive: {
+    tradingAggressiveness: 0.5,
+    riskTolerance: 0.5,
+    trustFactor: 0.5,
+    learningRate: 0.7,
+    decisionDelayMs: { min: 2000, max: 8000 },
+    minResourceBuffer: 2.0,
+    maxTradeSize: 0.4
   }
 };
 

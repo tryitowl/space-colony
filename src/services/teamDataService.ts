@@ -151,14 +151,15 @@ class TeamDataService {
       const teams = await this.getSessionTeams(sessionId);
       return teams.filter(team => {
         if (team.id === excludeTeamId) return false;
-        if (team.isEliminated) return false;
-        
+        if (team.eliminationStatus?.isEliminated) return false;
+
         // Check if team is in critical mode
         const criticalResources = ['oxygen', 'food', 'water', 'energy'];
-        const inCriticalMode = criticalResources.some(resource => 
-          (team.resources[resource as keyof Resources] || 0) < 5
-        );
-        
+        const inCriticalMode = criticalResources.some(resource => {
+          const value = team.resources[resource as keyof Resources];
+          return typeof value === 'number' && value < 5;
+        });
+
         return !inCriticalMode;
       });
     } catch (error) {
@@ -271,11 +272,13 @@ class TeamDataService {
       // Calculate changes for logging
       const changes: Record<string, { from: number; to: number }> = {};
       let hasChanges = false;
-      
+
       Object.entries(resources).forEach(([key, value]) => {
-        const oldValue = team.resources[key as keyof Resources] || 0;
-        if (oldValue !== value) {
-          changes[key] = { from: oldValue, to: value as number };
+        const oldValue = team.resources[key as keyof Resources];
+        const oldNum = typeof oldValue === 'number' ? oldValue : 0;
+        const newNum = typeof value === 'number' ? value : 0;
+        if (oldNum !== newNum) {
+          changes[key] = { from: oldNum, to: newNum };
           hasChanges = true;
         }
       });
@@ -305,7 +308,7 @@ class TeamDataService {
         data: { 
           resourceTypes: Object.keys(resources),
           changes,
-          totalResourceValue: Object.values(updatedResources).reduce((sum, val) => 
+          totalResourceValue: Object.values(updatedResources).reduce<number>((sum, val) =>
             typeof val === 'number' ? sum + val : sum, 0
           )
         },
@@ -486,12 +489,13 @@ class TeamDataService {
     try {
       const teams = await this.getSessionTeams(sessionId);
       return teams.filter(team => {
-        if (team.isEliminated) return false;
-        
+        if (team.eliminationStatus?.isEliminated) return false;
+
         const criticalResources = ['oxygen', 'food', 'water', 'energy'];
-        return criticalResources.some(resource => 
-          (team.resources[resource as keyof Resources] || 0) < 5
-        );
+        return criticalResources.some(resource => {
+          const value = team.resources[resource as keyof Resources];
+          return typeof value === 'number' && value < 5;
+        });
       });
     } catch (error) {
       console.error('Error fetching critical teams:', error);
@@ -510,8 +514,10 @@ class TeamDataService {
       }
 
       return Object.entries(requiredResources).every(([resource, amount]) => {
-        const available = team.resources[resource as keyof Resources] || 0;
-        return available >= (amount || 0);
+        const value = team.resources[resource as keyof Resources];
+        const available = typeof value === 'number' ? value : 0;
+        const required = typeof amount === 'number' ? amount : 0;
+        return available >= required;
       });
     } catch (error) {
       console.error('Error verifying team resources:', error);
@@ -590,21 +596,21 @@ class TeamDataService {
       await batch.commit();
       
       await logTeamOperation({
-        operation: 'batchCreate',
-        data: { 
+        operation: 'create',
+        data: {
           teamCount: teams.length,
           teamIds,
           executionTime: Date.now() - startTime
         },
         success: true
       });
-      
+
       return teamIds;
     } catch (error) {
       console.error('Error batch creating teams:', error);
-      
+
       await logTeamOperation({
-        operation: 'batchCreate',
+        operation: 'create',
         data: { 
           teamCount: teams.length,
           executionTime: Date.now() - startTime
@@ -643,11 +649,11 @@ class TeamDataService {
           );
           
           if (hasObjectChanges) {
-            actualUpdates[key as keyof Colony] = value;
+            (actualUpdates as any)[key] = value;
             hasChanges = true;
           }
         } else if (currentValue !== value) {
-          actualUpdates[key as keyof Colony] = value;
+          (actualUpdates as any)[key] = value;
           hasChanges = true;
         }
       });
@@ -655,9 +661,9 @@ class TeamDataService {
       // Only update if there are actual changes
       if (!hasChanges) {
         await logTeamOperation({
-          operation: 'updateDelta',
+          operation: 'update',
           teamId,
-          data: { 
+          data: {
             requestedFields: Object.keys(updates),
             skipped: true,
             reason: 'No changes detected'

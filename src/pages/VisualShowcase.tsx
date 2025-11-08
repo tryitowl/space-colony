@@ -129,7 +129,7 @@ export const VisualShowcase: React.FC = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Dynamic Background */}
-      <ParallaxBackground variant={selectedBackground} interactive={true} />
+      <ParallaxBackground variant={selectedBackground} enableInteraction={true} />
 
       {/* Main Content */}
       <div className="relative z-10 p-8">

@@ -60,6 +60,9 @@ class GalaxyConfigurationService {
         galaxies: [{
           id: 'main',
           name: 'Main Galaxy',
+          code: 'MAN',
+          participantCount: 6,
+          gameMode: 'full_multiplayer',
           description: 'Standard 6-team configuration',
           totalTeams: 6,
           colonyTypes: ['mining', 'agricultural', 'research', 'trade_hub', 'military', 'manufacturing'],
@@ -70,15 +73,7 @@ class GalaxyConfigurationService {
         globalEvents: true,
         sharedMarketIntel: true,
         competitionMode: 'individual',
-        victoryConditions: [
-          {
-            id: 'survival',
-            name: 'Survival Victory',
-            description: 'Teams that survive all rounds',
-            type: 'survival',
-            evaluator: (teams: Colony[]) => teams.filter((t: Colony) => !t.eliminationStatus.isEliminated).map((t: Colony) => t.id)
-          }
-        ]
+        victoryConditions: ['survival']
       },
       recommendedPlayers: { min: 12, max: 36 },
       duration: 90,
@@ -97,6 +92,9 @@ class GalaxyConfigurationService {
           {
             id: 'alpha',
             name: 'Alpha Sector',
+            code: 'ALP',
+            participantCount: 8,
+            gameMode: 'mixed_mode',
             description: 'Primary trading hub',
             totalTeams: 8,
             colonyTypes: ['mining', 'agricultural', 'research', 'trade_hub'],
@@ -107,6 +105,9 @@ class GalaxyConfigurationService {
           {
             id: 'beta',
             name: 'Beta Sector',
+            code: 'BET',
+            participantCount: 8,
+            gameMode: 'mixed_mode',
             description: 'Resource-rich frontier',
             totalTeams: 8,
             colonyTypes: ['military', 'manufacturing', 'mining', 'research'],
@@ -119,22 +120,7 @@ class GalaxyConfigurationService {
         globalEvents: true,
         sharedMarketIntel: false,
         competitionMode: 'hybrid',
-        victoryConditions: [
-          {
-            id: 'economic',
-            name: 'Economic Dominance',
-            description: 'Highest total resource value',
-            type: 'economic',
-            evaluator: (teams: Colony[]) => {
-              const sorted = [...teams].sort((a: Colony, b: Colony) => {
-                const aTotal = Object.values(a.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
-                const bTotal = Object.values(b.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
-                return bTotal - aTotal;
-              });
-              return [sorted[0].id];
-            }
-          }
-        ]
+        victoryConditions: ['economic']
       },
       recommendedPlayers: { min: 24, max: 96 },
       duration: 120,
@@ -153,6 +139,9 @@ class GalaxyConfigurationService {
           {
             id: 'group_a',
             name: 'Group A',
+            code: 'GRA',
+            participantCount: 6,
+            gameMode: 'full_multiplayer',
             description: 'Tournament group A',
             totalTeams: 6,
             colonyTypes: ['mining', 'agricultural', 'research', 'trade_hub', 'military', 'manufacturing'],
@@ -171,6 +160,9 @@ class GalaxyConfigurationService {
           {
             id: 'group_b',
             name: 'Group B',
+            code: 'GRB',
+            participantCount: 6,
+            gameMode: 'full_multiplayer',
             description: 'Tournament group B',
             totalTeams: 6,
             colonyTypes: ['mining', 'agricultural', 'research', 'trade_hub', 'military', 'manufacturing'],
@@ -191,35 +183,7 @@ class GalaxyConfigurationService {
         globalEvents: false,
         sharedMarketIntel: false,
         competitionMode: 'galaxy',
-        victoryConditions: [
-          {
-            id: 'tournament',
-            name: 'Tournament Victory',
-            description: 'Top team from each galaxy advances',
-            type: 'custom',
-            evaluator: (teams: Colony[]) => {
-              const galaxyGroups = new Map<string, Colony[]>();
-              teams.forEach((team: Colony) => {
-                const galaxyId = team.galaxyId || 'default';
-                const galaxy = galaxyGroups.get(galaxyId) || [];
-                galaxy.push(team);
-                galaxyGroups.set(galaxyId, galaxy);
-              });
-
-              const winners: string[] = [];
-              galaxyGroups.forEach((galaxyTeams: Colony[]) => {
-                const sorted = galaxyTeams.sort((a: Colony, b: Colony) => {
-                  const aScore = Object.values(a.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
-                  const bScore = Object.values(b.resources).reduce((sum: number, val) => sum + (typeof val === 'number' ? val : 0), 0);
-                  return bScore - aScore;
-                });
-                if (sorted[0]) winners.push(sorted[0].id);
-              });
-
-              return winners;
-            }
-          }
-        ]
+        victoryConditions: ['tournament']
       },
       recommendedPlayers: { min: 24, max: 72 },
       duration: 150,
@@ -245,19 +209,13 @@ class GalaxyConfigurationService {
         ...template,
         configuration: {
           ...template.configuration,
-          // Remove evaluator functions from victory conditions
-          victoryConditions: template.configuration.victoryConditions?.map(vc => ({
-            id: vc.id,
-            name: vc.name,
-            description: vc.description,
-            type: vc.type
-            // evaluator function is not included for serialization
-          })) ?? []
+          // victoryConditions are already strings, no transformation needed
+          victoryConditions: template.configuration.victoryConditions ?? []
         },
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now()
       };
-      
+
       batch.set(doc(db, 'galaxyTemplates', id), serializableTemplate);
     });
 
@@ -273,15 +231,9 @@ class GalaxyConfigurationService {
 
     templatesSnapshot.forEach(doc => {
       const data = doc.data() as GalaxyTemplate;
-      
-      // Restore evaluator functions based on type
-      if (data.configuration.victoryConditions) {
-        data.configuration.victoryConditions = data.configuration.victoryConditions.map(vc => ({
-          ...vc,
-          evaluator: this.getVictoryConditionEvaluator(vc.type)
-        }));
-      }
-      
+
+      // victoryConditions are already strings, no transformation needed
+
       templates.push(data);
     });
 
@@ -299,15 +251,9 @@ class GalaxyConfigurationService {
     }
 
     const data = templateDoc.data() as GalaxyTemplate;
-    
-    // Restore evaluator functions based on type
-    if (data.configuration.victoryConditions) {
-      data.configuration.victoryConditions = data.configuration.victoryConditions.map(vc => ({
-        ...vc,
-        evaluator: this.getVictoryConditionEvaluator(vc.type)
-      }));
-    }
-    
+
+    // victoryConditions are already strings, no transformation needed
+
     return data;
   }
 
@@ -340,14 +286,8 @@ class GalaxyConfigurationService {
       ...template,
       configuration: {
         ...template.configuration,
-        // Remove evaluator functions from victory conditions
-        victoryConditions: template.configuration.victoryConditions?.map(vc => ({
-          id: vc.id,
-          name: vc.name,
-          description: vc.description,
-          type: vc.type
-          // evaluator function is not included for serialization
-        })) ?? []
+        // victoryConditions are already strings, no transformation needed
+        victoryConditions: template.configuration.victoryConditions ?? []
       },
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now()
@@ -408,7 +348,7 @@ class GalaxyConfigurationService {
         aiEnabled: enableAI && aiTeamsCount > 0,
         aiDifficulty: this.getAIDifficulty(difficulty),
         specialRules: this.getSpecialRules(difficulty, galaxyCount > 1)
-      });
+      } as Galaxy);
     }
 
     // Determine victory conditions based on difficulty
@@ -512,48 +452,18 @@ class GalaxyConfigurationService {
   private getVictoryConditions(
     difficulty: string,
     competitionMode: 'individual' | 'galaxy' | 'hybrid'
-  ): VictoryCondition[] {
-    const conditions: VictoryCondition[] = [];
+  ): string[] {
+    const conditions: string[] = [];
 
     // Always include survival
-    conditions.push({
-      id: 'survival',
-      name: 'Survival Victory',
-      description: 'Teams that survive all rounds',
-      type: 'survival',
-      evaluator: (teams) => teams.filter(t => !t.eliminationStatus.isEliminated).map(t => t.id)
-    });
+    conditions.push('survival');
 
     if (difficulty !== 'beginner') {
-      conditions.push({
-        id: 'economic',
-        name: 'Economic Victory',
-        description: 'Highest total resource value',
-        type: 'economic',
-        evaluator: (teams) => {
-          const sorted = [...teams].sort((a, b) => {
-            const aTotal = Object.values(a.resources).reduce((sum, val) => sum + val, 0);
-            const bTotal = Object.values(b.resources).reduce((sum, val) => sum + val, 0);
-            return bTotal - aTotal;
-          });
-          return [sorted[0].id];
-        }
-      });
+      conditions.push('economic');
     }
 
     if (difficulty === 'advanced' || difficulty === 'expert') {
-      conditions.push({
-        id: 'diplomatic',
-        name: 'Diplomatic Victory',
-        description: 'Most successful trades completed',
-        type: 'diplomatic',
-        evaluator: (teams) => {
-          const sorted = [...teams].sort((a, b) => 
-            (b.metrics?.tradesCompleted || 0) - (a.metrics?.tradesCompleted || 0)
-          );
-          return [sorted[0].id];
-        }
-      });
+      conditions.push('diplomatic');
     }
 
     return conditions;
@@ -793,4 +703,3 @@ class GalaxyConfigurationService {
 export const galaxyConfigurationService = new GalaxyConfigurationService();
 
 // Export types
-export type { GalaxyTemplate };

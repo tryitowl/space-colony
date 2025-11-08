@@ -27,7 +27,7 @@ class EventService {
           id: doc.id,
           name: data.name,
           organization: data.organizationName,
-          date: data.eventDate || new Date().toISOString().split('T')[0],
+          date: data.startTime ? new Date(data.startTime).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
           description: data.eventDescription || '',
           participantCount: data.totalParticipants || 0,
           code: doc.id.substring(6, 10).toUpperCase(), // Extract 4 chars from event ID
@@ -81,7 +81,7 @@ class EventService {
         id: eventDoc.id,
         name: data.name,
         organization: data.organizationName,
-        date: data.eventDate || new Date().toISOString().split('T')[0],
+        date: data.startTime ? new Date(data.startTime).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         description: data.eventDescription || '',
         participantCount: data.totalParticipants || 0,
         code: eventDoc.id.substring(6, 10).toUpperCase(),
@@ -111,7 +111,11 @@ class EventService {
         id: doc.id
       })) as GalaxyConfiguration[];
       
-      configs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      configs.sort((a, b) => {
+        const aTime = typeof a.createdAt === 'number' ? a.createdAt : (a.createdAt as any)?.toMillis?.() || 0;
+        const bTime = typeof b.createdAt === 'number' ? b.createdAt : (b.createdAt as any)?.toMillis?.() || 0;
+        return bTime - aTime;
+      });
       
       return configs[0];
     } catch (error) {

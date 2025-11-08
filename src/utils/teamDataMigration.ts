@@ -84,9 +84,7 @@ export class TeamDataMigration {
           teamsMap.set(teamId, {
             team: {
               ...team,
-              id: teamId,
-              sessionId,
-              eventId: sessionData.eventId
+              id: teamId
             },
             sources: ['embedded']
           });
@@ -113,9 +111,7 @@ export class TeamDataMigration {
           teamsMap.set(teamId, {
             team: {
               ...teamData,
-              id: teamId,
-              sessionId,
-              eventId: sessionData.eventId
+              id: teamId
             },
             sources: ['subcollection']
           });

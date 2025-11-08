@@ -1458,7 +1458,7 @@ export class AIColonyService {
    */
   private async makeSmallGalaxyEmergencyDecision(
     aiState: AIColonyState,
-    galaxyContext: { totalTeams: number; humanTeams: number; aiTeams: number }
+    galaxyContext?: { totalTeams: number; humanTeams: number; aiTeams: number }
   ): Promise<AIDecision> {
     const { colony } = aiState;
     
@@ -1489,7 +1489,7 @@ export class AIColonyService {
           reasoning: [
             'Small galaxy requires cooperation',
             'Emergency trade for survival',
-            `Only ${galaxyContext.totalTeams} teams in galaxy`
+            galaxyContext ? `Only ${galaxyContext.totalTeams} teams in galaxy` : 'Limited teams available'
           ]
         };
       }
@@ -1507,7 +1507,7 @@ export class AIColonyService {
    */
   private selectBestOpportunityForLargeGalaxy(
     opportunities: any[],
-    galaxyContext: { totalTeams: number; humanTeams: number; aiTeams: number }
+    galaxyContext?: { totalTeams: number; humanTeams: number; aiTeams: number }
   ): any {
     // In large galaxies, prioritize efficiency and competition
     const scoredOpportunities = opportunities.map(opp => {

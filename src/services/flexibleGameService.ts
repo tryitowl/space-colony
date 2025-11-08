@@ -31,7 +31,8 @@ import type {
   Colony,
   GameState,
   Resources,
-  GameEvent
+  GameEvent,
+  Player
 } from '../types';
 import type {
   Galaxy,
@@ -152,8 +153,10 @@ export class FlexibleGameService extends GameService {
       currentRound: 0,
       roundStartTime: 0,
       gameState: 'setup',
-      settings: galaxyConfiguration.gameSettings || {
-        roundDurations: this.getDefaultRoundDurations(),
+      settings: {
+        roundDurations: Array.isArray(galaxyConfiguration.timing?.roundDurations)
+          ? this.getDefaultRoundDurations()
+          : (galaxyConfiguration.timing?.roundDurations as any || this.getDefaultRoundDurations()),
         enableAlienContact: true,
         customIntel: []
       },
@@ -173,8 +176,14 @@ export class FlexibleGameService extends GameService {
     // Save session to Firestore
     await setDoc(doc(firestore, 'sessions', sessionId), sessionData);
 
-    // Save code mappings
-    await sessionCodeService.saveSessionCodeMapping(sessionCodeMapping);
+    // Save code mappings (only if masterCode exists)
+    if (sessionCodeMapping.masterCode) {
+      await sessionCodeService.saveSessionCodeMapping({
+        code: sessionCodeMapping.masterCode,
+        sessionId: sessionId,
+        isCustom: false
+      });
+    }
 
     // Initialize real-time data for each galaxy
     await this.initializeMultiGalaxyRealtimeData(sessionId, galaxies);
@@ -237,12 +246,15 @@ export class FlexibleGameService extends GameService {
   }> {
     // Look up the game code in the session code service
     const codeInfo = await sessionCodeService.lookupCode(gameCode);
-    
+
     if (!codeInfo) {
       throw new Error(`Invalid game code: ${gameCode}`);
     }
 
-    const { sessionId, teamId, galaxyId } = codeInfo;
+    const sessionId = codeInfo.sessionId;
+    // For flexible sessions, we'll determine teamId and galaxyId from the session
+    const teamId = `temp_team_${Date.now()}`;
+    const galaxyId = `temp_galaxy_${Date.now()}`;
     const playerId = `${teamId}_player_${Date.now()}`;
 
     // Update team with new player
@@ -393,7 +405,7 @@ export class FlexibleGameService extends GameService {
       let productionMultiplier = 1;
 
       if (galaxy?.resourceModifiers) {
-        consumptionMultiplier = galaxy.resourceModifiers.consumptionMultiplier || 1;
+        consumptionMultiplier = galaxy.resourceModifiers.consumptionMultipliers?.oxygen || 1;
         productionMultiplier = galaxy.resourceModifiers.productionMultipliers?.energy || 1;
       }
 
@@ -569,13 +581,13 @@ export class FlexibleGameService extends GameService {
       'strategy_1': 'round1Strategy',
       'round_2': 'round2Trading',
       'strategy_2': 'round2Strategy',
-      'milestone': 'milestoneBreak',
+      'milestone_break': 'milestoneBreak',
       'round_3': 'round3Trading',
       'strategy_3': 'round3Strategy',
       'round_4': 'round4Trading',
       'strategy_4': 'round4Strategy',
       'round_5': 'round5Trading',
-      'game_over': 'instructions'
+      'completed': 'instructions'
     };
 
     return durations[stateToRoundMap[gameState]] || 5 * 60 * 1000;
@@ -593,10 +605,12 @@ export class FlexibleGameService extends GameService {
     if (!team) return;
 
     // Add player to team
-    const newPlayer = {
+    const newPlayer: Player = {
       id: playerId,
       name: `Player ${team.players.length + 1}`,
-      isActive: true,
+      gameCode: 'TEMP',
+      isOnline: true,
+      lastSeen: Date.now(),
       joinedAt: Date.now()
     };
     

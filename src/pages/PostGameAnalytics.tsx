@@ -518,14 +518,16 @@ export const PostGameAnalytics: React.FC = () => {
               <HUDFrame className="p-6">
                 <h2 className="text-2xl font-bold text-white mb-4">🏆 Final Rankings</h2>
                 <Leaderboard
-                  teams={analyticsData.teamPerformance.map(team => ({
+                  entries={analyticsData.teamPerformance.map((team, index) => ({
                     id: team.teamId,
+                    rank: index + 1,
                     name: team.teamName,
                     score: team.finalScore,
                     colonyType: team.colonyType as any,
-                    isEliminated: team.survivalRounds < 5
+                    teamId: team.teamId,
+                    eliminated: team.survivalRounds < 5
                   }))}
-                  currentTeamId={selectedTeam || ''}
+                  currentPlayerId={selectedTeam || ''}
                 />
               </HUDFrame>
 
@@ -533,27 +535,15 @@ export const PostGameAnalytics: React.FC = () => {
               <HUDFrame className="p-6">
                 <h2 className="text-2xl font-bold text-white mb-4">📈 Resource Trends</h2>
                 <DataVisualization
-                  type="line"
-                  data={{
-                    labels: analyticsData.resourceFlow.rounds.map(r => `Round ${r}`),
-                    datasets: Object.entries(analyticsData.resourceFlow.resourceTrends).map(([resource, data], index) => ({
-                      label: resource.charAt(0).toUpperCase() + resource.slice(1),
-                      data,
-                      borderColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'][index % 4],
-                      backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'][index % 4] + '20'
-                    }))
-                  }}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: { position: 'top' },
-                      title: { display: true, text: 'Resource Availability Over Time' }
-                    },
-                    scales: {
-                      y: { beginAtZero: true, title: { display: true, text: 'Relative Availability (%)' } },
-                      x: { title: { display: true, text: 'Game Round' } }
-                    }
-                  }}
+                  title="Resource Availability Over Time"
+                  data={analyticsData.resourceFlow.rounds.map((r, index) => ({
+                    label: `Round ${r}`,
+                    value: Object.values(analyticsData.resourceFlow.resourceTrends).reduce((sum, trend) =>
+                      sum + (trend[index] || 0), 0
+                    ) / Object.keys(analyticsData.resourceFlow.resourceTrends).length
+                  }))}
+                  variant="primary"
+                  animated={true}
                 />
               </HUDFrame>
 

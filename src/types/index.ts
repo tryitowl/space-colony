@@ -38,6 +38,9 @@ export interface Colony {
   tradingStatus: TradingStatus;
   gameCode: string;
   eliminationStatus: EliminationStatus;
+  // Session/Event tracking
+  sessionId?: string;
+  eventId?: string;
   // Multi-galaxy support
   galaxyId?: string;
   isAIControlled?: boolean;

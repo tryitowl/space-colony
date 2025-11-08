@@ -908,7 +908,7 @@ export class AnalyticsService {
   
   private identifyCrisisTrades(teamId: string): number {
     // Count trades made during crisis events
-    const crisisEvents = this.gameEvents.filter(e => e.type === 'crisis_event');
+    const crisisEvents = this.gameEvents.filter(e => e.type === 'event' && e.data?.eventType === 'crisis');
     let crisisTrades = 0;
     
     crisisEvents.forEach(event => {
@@ -1427,7 +1427,7 @@ export class AnalyticsService {
       
       // Crisis resolution participation
       const crisisEvents = this.gameEvents.filter(e =>
-        e.type === 'crisis_resolved' && (e.data as any)?.contributingTeams?.includes(team.id)
+        e.type === 'event' && e.data?.eventType === 'crisis_resolved' && (e.data as any)?.contributingTeams?.includes(team.id)
       );
       score += crisisEvents.length * 5;
       
@@ -1598,9 +1598,8 @@ export class AnalyticsService {
   }
 
   private countCriticalMoments(events: GameEventLog[]): number {
-    return events.filter(e => 
-      e.type === 'team_critical' || 
-      e.type === 'near_elimination' ||
+    return events.filter(e =>
+      (e.type === 'system' && (e.data?.eventType === 'team_critical' || e.data?.eventType === 'near_elimination')) ||
       e.data?.critical === true
     ).length;
   }
@@ -1613,7 +1612,7 @@ export class AnalyticsService {
 
   private calculatePlanningEffectiveness(team: Colony, events: GameEventLog[]): number {
     // Based on how well team avoided crises and maintained resources
-    const crisisEvents = events.filter(e => e.type === 'crisis_event');
+    const crisisEvents = events.filter(e => e.type === 'event' && e.data?.eventType === 'crisis');
     const avoidedCrises = crisisEvents.filter(e =>
       !(e.data as any)?.affectedTeams?.includes(team.id)
     ).length;

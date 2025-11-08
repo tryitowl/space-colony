@@ -259,10 +259,14 @@ export default class FlexibleTradingService extends TradingService {
             defaults.tradingCooldown = rule.value as number;
             break;
           case 'prohibited_resources':
-            defaults.prohibitedResources = rule.value as string[];
+            if (Array.isArray(rule.config?.resources)) {
+              defaults.prohibitedResources = rule.config.resources as string[];
+            }
             break;
           case 'required_intel':
-            defaults.requiredIntel = rule.value as string[];
+            if (Array.isArray(rule.config?.intel)) {
+              defaults.requiredIntel = rule.config.intel as string[];
+            }
             break;
         }
       });
@@ -279,11 +283,11 @@ export default class FlexibleTradingService extends TradingService {
     
     // Check for timeout modifiers in special rules
     let timeout = baseTimeout;
-    
+
     [initiatorGalaxy, targetGalaxy].forEach(galaxy => {
-      const timeoutRule = galaxy.specialRules?.find(r => r.type === 'trade_timeout');
-      if (timeoutRule) {
-        timeout = Math.max(timeout, timeoutRule.value as number);
+      const timeoutRule = galaxy.specialRules?.find(r => r.type === 'trading_cooldown');
+      if (timeoutRule && typeof timeoutRule.value === 'number') {
+        timeout = Math.max(timeout, timeoutRule.value);
       }
     });
 
@@ -391,7 +395,11 @@ export default class FlexibleTradingService extends TradingService {
     Object.entries(resources).forEach(([resource, amount]) => {
       if (typeof amount === 'number') {
         const multiplier = modifiers[resource] || 1;
-        modified[resource as keyof Resources] = Math.floor(amount * multiplier);
+        const key = resource as keyof Resources;
+        // Only assign if the target property expects a number (not IntelItem[])
+        if (key !== 'marketIntel' && key !== 'surveyReports' && key !== 'crisisWarnings' && key !== 'intel') {
+          (modified[key] as number) = Math.floor(amount * multiplier);
+        }
       }
     });
 

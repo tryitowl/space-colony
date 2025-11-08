@@ -379,8 +379,8 @@ export class PlayerPresenceService {
     if (snapshot.exists()) {
       const teamsData = snapshot.val();
       for (const [teamId, teamData] of Object.entries(teamsData as any)) {
-        if (teamData.presence) {
-          result.set(teamId, Object.values(teamData.presence));
+        if ((teamData as any).presence) {
+          result.set(teamId, Object.values((teamData as any).presence));
         }
       }
     }

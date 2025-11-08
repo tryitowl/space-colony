@@ -102,7 +102,7 @@ export class ScoringService {
   private scoreHistory: Map<string, RoundScore[]> = new Map();
   private realtimeListeners: Array<() => void> = [];
 
-  private constructor(config: ScoringConfig) {
+  protected constructor(config: ScoringConfig) {
     this.config = config;
 
     this.initializeAchievements();

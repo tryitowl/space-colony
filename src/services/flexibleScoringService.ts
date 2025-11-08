@@ -418,7 +418,7 @@ export default class FlexibleScoringService extends ScoringService {
   private static teamMeetsSpecialRuleCondition(team: Colony, rule: SpecialRule): boolean {
     switch (rule.type) {
       case 'type_bonus':
-        return team.type === rule.value;
+        return typeof rule.value === 'string' && team.type === rule.value;
       case 'resource_threshold':
         if (typeof rule.value === 'object') {
           const threshold = rule.value as Record<string, number>;

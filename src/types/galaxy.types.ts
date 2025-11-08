@@ -56,7 +56,10 @@ export interface SpecialRule {
   id: string;
   name: string;
   description: string;
-  type: 'trade_restriction' | 'resource_event' | 'win_condition' | 'gameplay_modifier' | 'elimination_rounds';
+  type: 'trade_restriction' | 'resource_event' | 'win_condition' | 'gameplay_modifier' | 'elimination_rounds' |
+        'no_cross_galaxy_trade' | 'max_trades_per_round' | 'trading_cooldown' | 'prohibited_resources' | 'required_intel' |
+        'resource_value_modifier' | 'survival_bonus_multiplier' | 'trading_bonus_multiplier' | 'elimination_penalty_modifier' |
+        'type_bonus' | 'resource_threshold';
   config?: Record<string, any>;
   value?: number;
 }
