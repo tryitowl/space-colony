@@ -4,7 +4,7 @@ import {
   updateDoc, 
   collection, 
   addDoc, 
-  writeBatch,
+  // writeBatch,
   serverTimestamp,
   query,
   where,
@@ -17,9 +17,9 @@ import { teamDataService } from './teamDataService';
 import { realtimeService } from './realtimeService';
 import type { 
   GameSession, 
-  Colony, 
+  // Colony, 
   Resources, 
-  GameState,
+  // GameState,
   GameEventLog
 } from '../types/game';
 

@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { TradeDecision, PlayerVote } from '../../types/player.types';
+import type { TradeDecision } from '../../types/player.types';
 import type { TradeOffer } from '../../types';
 
 interface TeamDecisionVotingProps {

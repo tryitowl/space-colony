@@ -8,8 +8,7 @@ import {
   where,
   getDocs,
   writeBatch,
-  Timestamp,
-  deleteDoc
+  Timestamp
 } from 'firebase/firestore';
 import { firestore as db } from '../firebase/config';
 import { teamDataService } from './teamDataService';
@@ -24,8 +23,7 @@ import type {
   EnhancedColony,
   TeamAssignment
 } from '../types/galaxy.types';
-import { DEFAULT_GALAXY_CONFIGS, validateGalaxyConfig } from '../types/galaxy.types';
-import type { ColonyType } from '../types/base.types';
+import { DEFAULT_GALAXY_CONFIGS } from '../types/galaxy.types';
 
 /**
  * Service for managing galaxies within game sessions

@@ -10,19 +10,13 @@ import {
   setDoc,
   getDoc,
   updateDoc,
-  collection,
-  query,
-  where,
-  getDocs,
   writeBatch,
-  Timestamp,
   onSnapshot
 } from 'firebase/firestore';
 import { ref, set, onValue, off } from 'firebase/database';
 import { firestore, realtimeDb } from '../firebase/config';
 import { GameService } from './GameService';
 import { galaxyService } from './galaxyService';
-import { TeamGenerationService } from './teamGenerationService';
 import { sessionCodeService } from './sessionCodeService';
 import { configurationValidationService } from './configurationValidationService';
 import { teamDataService } from './teamDataService';
@@ -30,16 +24,13 @@ import type {
   GameSession,
   Colony,
   GameState,
-  Resources,
-  GameEvent,
   Player
 } from '../types';
 import type {
   Galaxy,
   GalaxyConfiguration,
   EnhancedColony,
-  SessionCodeMapping,
-  TeamAllocationConfig
+  SessionCodeMapping
 } from '../types/galaxy.types';
 import type { AIColonyConfig } from '../types/ai.types';
 import { AuthService } from './authService';

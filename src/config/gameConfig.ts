@@ -379,7 +379,7 @@ export type CrisisConfig = typeof GameConfig.crisis;
 export type UIConfig = typeof GameConfig.ui;
 
 // Configuration validation
-export function validateConfig(config: Partial<GameConfigType>): boolean {
+export function validateConfig(_config: Partial<GameConfigType>): boolean {
   // Add validation logic here
   return true;
 }

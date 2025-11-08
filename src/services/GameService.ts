@@ -405,7 +405,7 @@ export class GameService {
     teamId: string,
     playerId: string,
     newRole: import('../types/player.types').TeamPlayerRole,
-    updatedBy: string
+    _updatedBy: string
   ): Promise<void> {
     try {
       const sessionDoc = await getDoc(this.getSessionRef(sessionId));
@@ -469,7 +469,7 @@ export class GameService {
     sessionId: string,
     teamId: string,
     playerId: string,
-    removedBy?: string
+    _removedBy?: string
   ): Promise<void> {
     try {
       const sessionDoc = await getDoc(this.getSessionRef(sessionId));

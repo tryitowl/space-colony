@@ -7,20 +7,15 @@
 
 import type {
   AIPersonalityType,
-  AIDecision,
-  AIMemory,
-  AITradeHistory
+  AIDecision
 } from '../types/ai.types';
 import type {
   Colony,
-  TradeOffer,
   Resources
 } from '../types';
 import type {
   PersonalityProfile,
-  PersonalityTraits,
-  EmotionalState,
-  RelationshipStatus
+  PersonalityTraits
 } from './aiPersonalityService';
 
 /**

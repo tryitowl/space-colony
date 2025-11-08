@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { GameConfig, type GameConfigType, mergeConfig } from '../../config/gameConfig';
 import { GlassPanel } from '../ui/GlassPanel';
 import { Button } from '../ui/Button';
-import { Switch } from '../ui/Switch';
 import HUDFrame from '../ui/HUDFrame';
 import { Save, RefreshCw, Download, Upload, AlertTriangle } from 'lucide-react';
 

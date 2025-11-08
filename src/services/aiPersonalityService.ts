@@ -10,14 +10,12 @@ import type {
   AIPersonalityType,
   AIStrategyParameters,
   AIDifficulty,
-  AIMemory,
   AITradeHistory
 } from '../types/ai.types';
 import type {
   Colony,
   ColonyType,
   Resources,
-  TradeOffer,
   GameSession
 } from '../types';
 import { DEFAULT_PERSONALITY_PARAMS } from '../types/ai.types';
@@ -734,7 +732,7 @@ _galaxyContext?: { totalTeams: number; galaxyTheme?: string }
   updatePersonalityFromExperience(
     colonyId: string,
     tradeHistory: AITradeHistory[],
-    currentRound: number
+    _currentRound: number
   ): void {
     const profile = this.personalities.get(colonyId);
     if (!profile) return;

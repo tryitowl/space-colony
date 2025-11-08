@@ -7,7 +7,6 @@
 
 import {
   doc,
-  getDoc,
   setDoc,
   updateDoc,
   collection,
@@ -15,7 +14,6 @@ import {
   where,
   orderBy,
   getDocs,
-  onSnapshot,
   writeBatch,
   Timestamp
 } from 'firebase/firestore';
@@ -34,8 +32,7 @@ import type {
 import type {
   Galaxy,
   GalaxyConfiguration,
-  SessionCodeMapping,
-  EnhancedColony
+  SessionCodeMapping
 } from '../types/galaxy.types';
 
 interface FlexibleSessionData extends GameSession {
@@ -212,7 +209,7 @@ export default class FlexibleSessionService extends SessionService {
 
     // Subscribe to real-time updates
     const realtimeRef = ref(realtimeDb, `sessions/${sessionId}/live`);
-    const realtimeUnsubscribe = onValue(realtimeRef, (snapshot) => {
+    onValue(realtimeRef, (snapshot) => {
       if (snapshot.exists()) {
         realtimeData = snapshot.val();
         updateCallback();

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
-import type { GameSession, Colony, TradeOffer, Resources, Investments, ColonyType } from '../types';
+import type { GameSession, Colony, TradeOffer, Resources, Investments } from '../types';
 import { GameService } from '../services/GameService';
 import { TradingService } from '../services/tradingService';
 import { GameEngineService } from '../services/gameEngineService';

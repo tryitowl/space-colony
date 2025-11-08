@@ -20,7 +20,7 @@ export function generateColonyId(
   galaxyId: string,
   colonyType: ColonyType,
   teamNumber: number,
-  mode: 'flexible' | 'standard' = 'standard'
+  _mode: 'flexible' | 'standard' = 'standard'
 ): string {
   // Always use consistent format: galaxyId_colonyType_teamNumber
   // This ensures AI configs can match teams regardless of mode

@@ -1,4 +1,4 @@
-import { doc, updateDoc, setDoc, getDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
+import { doc, updateDoc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref, set, onValue, off } from 'firebase/database';
 import { firestore as db, realtimeDb as rtdb } from '../firebase/config';
 import { notificationService } from './notificationService';
@@ -214,7 +214,7 @@ class GalaxyStateService {
           );
 
       const teamsSnapshot = await getDocs(teamsQuery);
-      const batch = writeBatch(db);
+      // const __batch = writeBatch(db);
 
       // Send notification to each team
       const notificationPromises = teamsSnapshot.docs.map(async (teamDoc) => {
@@ -298,7 +298,7 @@ class GalaxyStateService {
   /**
    * Get active announcements
    */
-  async getActiveAnnouncements(sessionId: string, galaxyId?: string): Promise<GlobalAnnouncement[]> {
+  async getActiveAnnouncements(_sessionId: string, galaxyId?: string): Promise<GlobalAnnouncement[]> {
     try {
       const now = Date.now();
       const announcementsQuery = query(
@@ -372,7 +372,7 @@ class GalaxyStateService {
   private setupStateListener(sessionId: string, galaxyId: string): void {
     const stateRef = ref(rtdb, `sessions/${sessionId}/galaxies/${galaxyId}/state`);
     
-    const listener = onValue(stateRef, (snapshot) => {
+    onValue(stateRef, (snapshot) => {
       const state = snapshot.val();
       if (state) {
         this.galaxyStates.set(galaxyId, {

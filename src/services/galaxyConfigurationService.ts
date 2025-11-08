@@ -4,8 +4,8 @@ import {
   getDoc,
   collection,
   getDocs,
-  updateDoc,
-  deleteDoc,
+  // updateDoc,
+  // deleteDoc,
   writeBatch,
   Timestamp
 } from 'firebase/firestore';
@@ -13,13 +13,13 @@ import { firestore as db } from '../firebase/config';
 import type {
   Galaxy,
   GalaxyConfiguration,
-  TeamStructure,
-  ResourceModifiers,
-  SpecialRule,
-  VictoryCondition,
-  DEFAULT_GALAXY_CONFIGS
+  // TeamStructure,
+  // ResourceModifiers,
+  SpecialRule
+  // VictoryCondition,
+  // DEFAULT_GALAXY_CONFIGS
 } from '../types/galaxy.types';
-import type { ColonyType, Colony } from '../types';
+import type { ColonyType } from '../types';
 
 /**
  * Configuration templates for different galaxy setups
@@ -320,10 +320,10 @@ class GalaxyConfigurationService {
     } = options;
 
     // Calculate optimal galaxy setup
-    const teamsPerParticipant = 1; // Assuming 1 team per 3-6 participants
+    // const __teamsPerParticipant = 1; // Assuming 1 team per 3-6 participants
     const totalTeamsNeeded = Math.ceil(participantCount / 3);
     const aiTeamsCount = enableAI ? Math.floor(totalTeamsNeeded * aiRatio) : 0;
-    const humanTeamsCount = totalTeamsNeeded - aiTeamsCount;
+    // const __humanTeamsCount = totalTeamsNeeded - aiTeamsCount;
 
     // Determine number of galaxies
     const galaxyCount = Math.max(1, Math.ceil(totalTeamsNeeded / preferredGalaxySize));
@@ -451,7 +451,7 @@ class GalaxyConfigurationService {
    */
   private getVictoryConditions(
     difficulty: string,
-    competitionMode: 'individual' | 'galaxy' | 'hybrid'
+    _competitionMode: 'individual' | 'galaxy' | 'hybrid'
   ): string[] {
     const conditions: string[] = [];
 
@@ -487,8 +487,8 @@ class GalaxyConfigurationService {
   } {
     const {
       minHumanTeams = 4,
-      maxAITeams = totalTeams * 0.5,
-      balanceAcrossGalaxies = true
+      maxAITeams = totalTeams * 0.5
+      // balanceAcrossGalaxies = true
     } = options;
 
     let aiTeams = Math.floor(totalTeams * aiRatio);
@@ -643,60 +643,6 @@ class GalaxyConfigurationService {
     return 'expert';
   }
 
-  /**
-   * Get victory condition evaluator function based on type
-   */
-  private getVictoryConditionEvaluator(type: string): (teams: any[]) => string[] {
-    switch (type) {
-      case 'survival':
-        return (teams) => teams.filter(t => !t.eliminationStatus.isEliminated).map(t => t.id);
-      
-      case 'economic':
-        return (teams) => {
-          const sorted = [...teams].sort((a, b) => {
-            const aTotal = Object.values(a.resources).reduce((sum: number, val: any) => sum + val, 0);
-            const bTotal = Object.values(b.resources).reduce((sum: number, val: any) => sum + val, 0);
-            return bTotal - aTotal;
-          });
-          return [sorted[0].id];
-        };
-      
-      case 'diplomatic':
-        return (teams) => {
-          const sorted = [...teams].sort((a, b) => 
-            (b.metrics?.tradesCompleted || 0) - (a.metrics?.tradesCompleted || 0)
-          );
-          return [sorted[0].id];
-        };
-      
-      case 'custom':
-        // For tournament mode - top team from each galaxy
-        return (teams) => {
-          const galaxyGroups = new Map<string, typeof teams>();
-          teams.forEach(team => {
-            const galaxy = galaxyGroups.get(team.galaxyId) || [];
-            galaxy.push(team);
-            galaxyGroups.set(team.galaxyId, galaxy);
-          });
-
-          const winners: string[] = [];
-          galaxyGroups.forEach(galaxyTeams => {
-            const sorted = galaxyTeams.sort((a, b) => {
-              const aScore = Object.values(a.resources).reduce((sum: number, val: any) => sum + val, 0);
-              const bScore = Object.values(b.resources).reduce((sum: number, val: any) => sum + val, 0);
-              return bScore - aScore;
-            });
-            if (sorted[0]) winners.push(sorted[0].id);
-          });
-
-          return winners;
-        };
-      
-      default:
-        // Default to survival
-        return (teams) => teams.filter(t => !t.eliminationStatus.isEliminated).map(t => t.id);
-    }
-  }
 }
 
 // Export singleton instance

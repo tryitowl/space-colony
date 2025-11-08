@@ -2,15 +2,13 @@ import { AIColonyService } from './aiColonyService';
 import { AIStrategyService } from './aiStrategyService';
 import { GameService } from './GameService';
 import type { GameSession, Colony } from '../types';
-import type { 
-  AIColonyConfig, 
-  AIDifficulty, 
+import type {
+  AIColonyConfig,
+  AIDifficulty,
   AIPersonalityType,
   GalaxyAIConfig,
   AITeamDistribution,
   GalaxyAIBehaviorModifiers,
-  AISpecialRule,
-  CrossGalaxyAICoordination,
   AIPerformanceMetrics
 } from '../types/ai.types';
 import type { Galaxy, GalaxyConfiguration } from '../types/galaxy.types';

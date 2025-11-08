@@ -2,31 +2,30 @@
  * Player Presence Service - Manages multi-player presence and real-time synchronization
  */
 
-import { 
-  ref, 
-  onValue, 
-  onDisconnect, 
-  set, 
+import {
+  ref,
+  onValue,
+  onDisconnect,
+  set,
   update,
   serverTimestamp,
   off,
-  push,
-  child
+  push
 } from 'firebase/database';
-import { 
-  doc, 
-  updateDoc, 
-  onSnapshot,
-  arrayUnion,
-  arrayRemove,
-  Timestamp
+import {
+  doc,
+  updateDoc,
+  onSnapshot
+  // arrayUnion,
+  // arrayRemove,
+  // Timestamp
 } from 'firebase/firestore';
 import { realtimeDb, firestore } from '../firebase/config';
 import type { 
   TeamPlayer, 
   TeamPresence, 
   PlayerPresence, 
-  PlayerStatus,
+  // PlayerStatus,
   TeamPlayerRole
 } from '../types/player.types';
 import type { Colony } from '../types';
@@ -182,12 +181,12 @@ export class PlayerPresenceService {
       `sessions/${this.sessionId}/teams/${this.teamId}/presence`
     );
 
-    const unsubscribe = onValue(teamPresenceRef, (snapshot) => {
+    onValue(teamPresenceRef, (snapshot) => {
       if (!snapshot.exists()) return;
 
       const presenceData = snapshot.val();
       const players: PlayerPresence[] = Object.values(presenceData);
-      
+
       const teamPresence: TeamPresence = {
         teamId: this.teamId,
         onlinePlayerCount: players.filter(p => p.isOnline).length,
@@ -358,7 +357,7 @@ export class PlayerPresenceService {
       `sessions/${this.sessionId}/teams/${this.teamId}/presence/${targetPlayerId}`
     );
 
-    const unsubscribe = onValue(playerRef, (snapshot) => {
+    onValue(playerRef, (snapshot) => {
       callback(snapshot.exists() ? snapshot.val() : null);
     });
 

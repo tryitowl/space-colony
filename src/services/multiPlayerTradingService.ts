@@ -12,10 +12,9 @@ import type {
   IntelItem,
   GameSession
 } from '../types';
-import type { 
+import type {
   TeamPlayer,
-  TradeDecision,
-  TeamDecisionConfig
+  TradeDecision
 } from '../types/player.types';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../firebase/config';
@@ -340,7 +339,7 @@ export class MultiPlayerTradingService extends TradingService {
     sessionId: string,
     teamId: string,
     trade: TradeOffer,
-    syncService: TeamSyncService
+    _syncService: TeamSyncService
   ): Promise<{ canExecute: boolean; reason?: string }> {
     // Get current team resources
     const session = await this.getSession(sessionId);
@@ -461,8 +460,8 @@ export class MultiPlayerTradingService extends TradingService {
    * Get active trades for all team members
    */
   static async getTeamActiveTrades(
-    sessionId: string,
-    teamId: string
+    _sessionId: string,
+    _teamId: string
   ): Promise<TradeOffer[]> {
     // This would query all trades where the team is involved
     // Implementation would use Firestore queries
@@ -475,7 +474,7 @@ export class MultiPlayerTradingService extends TradingService {
   static async cancelPendingTrade(
     sessionId: string,
     tradeId: string,
-    teamId: string,
+    _teamId: string,
     cancelledBy: TeamPlayer
   ): Promise<void> {
     // Check permissions
@@ -486,7 +485,7 @@ export class MultiPlayerTradingService extends TradingService {
     await this.rejectTradeOfferWithLogging(
       sessionId,
       tradeId,
-      teamId,
+      _teamId,
       cancelledBy
     );
   }

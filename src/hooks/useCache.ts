@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { cacheService, sessionCache, teamCache, tradeCache } from '../services/cacheService';
+import { cacheService } from '../services/cacheService';
 
 interface UseCacheOptions {
   ttl?: number;

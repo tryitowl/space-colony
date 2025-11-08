@@ -1,11 +1,9 @@
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import type { 
-  PerformanceMetrics, 
-  BehavioralAnalysis,
-  TeamBehaviorProfile,
-  FacilitatorRecommendation 
+import type {
+  PerformanceMetrics,
+  BehavioralAnalysis
 } from './analyticsService';
 import type { GameSession } from '../types/game';
 
@@ -120,7 +118,7 @@ export class AnalyticsExportService {
    */
   async generateFacilitatorReport(
     data: ExportData,
-    customInsights?: string[]
+    _customInsights?: string[]
   ): Promise<FacilitatorReport> {
     const report: FacilitatorReport = {
       executiveSummary: this.generateExecutiveSummary(data),
@@ -161,9 +159,9 @@ export class AnalyticsExportService {
   // Private methods
 
   private async generatePDFReport(
-    data: ExportData, 
+    data: ExportData,
     options: ExportOptions,
-    facilitatorInfo?: any
+    _facilitatorInfo?: any
   ): Promise<void> {
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -450,7 +448,7 @@ export class AnalyticsExportService {
 
   // Helper methods for PDF generation
 
-  private addSectionHeader(pdf: jsPDF, title: string, y: number, margin: number, pageWidth: number): number {
+  private addSectionHeader(pdf: jsPDF, title: string, y: number, margin: number, _pageWidth: number): number {
     pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
     pdf.text(title, margin, y);
@@ -554,7 +552,7 @@ export class AnalyticsExportService {
     }));
   }
 
-  private generateFollowUpRecommendations(data: ExportData): string[] {
+  private generateFollowUpRecommendations(_data: ExportData): string[] {
     return [
       'Schedule team debrief sessions within 1 week',
       'Implement identified process improvements',

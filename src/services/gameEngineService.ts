@@ -5,25 +5,23 @@ import {
   onValue, 
   off 
 } from 'firebase/database';
-import { 
-  doc, 
-  getDoc, 
-  updateDoc, 
-  serverTimestamp,
-  writeBatch
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp
 } from 'firebase/firestore';
 import { firestore, realtimeDb } from '../firebase/config';
-import type { 
-  GameEngineState, 
-  GamePhase, 
+import type {
+  GameEngineState,
+  GamePhase,
   GameStatus,
   PhaseTransition,
   GameEngineConfig,
   GameEngineCallbacks,
   GameEngineEvent,
   GameEngineError,
-  TimerState,
-  RoundResults
+  TimerState
 } from '../types/gameEngine';
 import {
   DEFAULT_PHASE_CONFIG,
@@ -31,7 +29,7 @@ import {
   DEFAULT_ELIMINATION_RULES,
   DEFAULT_SCORING_RULES
 } from '../types/gameEngine';
-import type { GameSession, Colony } from '../types';
+import type { GameSession } from '../types';
 import { RoundService, type RoundEndProcessing } from './roundService';
 
 export class GameEngineService {

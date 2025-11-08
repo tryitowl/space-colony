@@ -7,7 +7,7 @@ import {
 } from 'firebase/firestore';
 import { firestore } from '../firebase/config';
 import { teamDataService } from './teamDataService';
-import type { TradeOffer, Colony } from '../types';
+import type { TradeOffer } from '../types';
 
 export interface TradeRelationship {
   partnerTeamId: string;

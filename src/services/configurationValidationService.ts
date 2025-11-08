@@ -9,37 +9,26 @@ import type {
   Galaxy,
   GalaxyConfiguration,
   SpecialRule,
-  VictoryCondition,
-  EnhancedColony,
-  TeamAssignment,
-  CrossGalaxyTradeRules
+  VictoryCondition
 } from '../types/galaxy.types';
 import type {
   ColonyType,
-  Resources,
-  Colony
+  Resources
 } from '../types';
 import type {
   ValidationResult,
   ValidationError,
   ValidationWarning,
-  ValidationErrorCode,
-  GalaxyConstraints,
   GalaxyBalanceMetrics,
   TeamCapability,
   ResourceBalanceValidation,
   TeamCompositionValidation,
   RuleCompatibility,
   VictoryConditionValidation,
-  ValidationContext,
-  ValidatedGalaxyConfiguration,
-  ValidationMessage,
   ValidatorOptions,
-  ValidationReport,
-  DEFAULT_GALAXY_CONSTRAINTS
+  ValidationReport
 } from '../types/validation.types';
 import { COLONY_STARTING_RESOURCES } from '../types';
-import { sessionCodeService } from './sessionCodeService';
 
 // Performance thresholds
 const PERFORMANCE_THRESHOLDS = {
@@ -598,7 +587,7 @@ export class ConfigurationValidationService {
    */
   private calculateTeamCapability(
     teamId: string,
-    colonyType: ColonyType,
+    _colonyType: ColonyType,
     production: Partial<Record<keyof Resources, number>>,
     consumption: Partial<Record<keyof Resources, number>>
   ): TeamCapability {
@@ -606,9 +595,9 @@ export class ConfigurationValidationService {
     const criticalResources: (keyof Resources)[] = ['oxygen', 'food', 'water', 'energy'];
     let survivalScore = 1.0;
     
-    criticalResources.forEach(resource => {
-      const prod = production[resource] || 0;
-      const cons = consumption[resource] || 0;
+    criticalResources.forEach(_resource => {
+      const prod = production[_resource] || 0;
+      const cons = consumption[_resource] || 0;
       const ratio = cons > 0 ? prod / cons : 1;
       survivalScore *= Math.min(1, ratio);
     });
@@ -978,7 +967,7 @@ export class ConfigurationValidationService {
    */
   private async validateSessionCodes(
     config: GalaxyConfiguration,
-    errors: ValidationError[],
+    _errors: ValidationError[],
     warnings: ValidationWarning[]
   ): Promise<void> {
     try {
@@ -1088,7 +1077,7 @@ export class ConfigurationValidationService {
     configuration: GalaxyConfiguration,
     options: Partial<ValidatorOptions> = {}
   ): Promise<ValidationReport> {
-    const startTime = Date.now();
+    // const _startTime = Date.now();
     const result = await this.validate(configuration, options as any);
     const balanceMetrics = await this.calculateBalanceMetrics(configuration);
     
@@ -1099,7 +1088,7 @@ export class ConfigurationValidationService {
     if (!result.valid) {
       suggestions.push('Fix all errors before proceeding with game creation');
     }
-    
+
     result.warnings.forEach(warning => {
       if (warning.suggestion) {
         suggestions.push(warning.suggestion);

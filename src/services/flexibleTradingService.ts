@@ -16,7 +16,7 @@ import {
   getDocs,
   writeBatch
 } from 'firebase/firestore';
-import { ref, set, get } from 'firebase/database';
+import { ref, set } from 'firebase/database';
 import { firestore, realtimeDb } from '../firebase/config';
 import { TradingService } from './tradingService';
 import { galaxyService } from './galaxyService';
@@ -24,12 +24,9 @@ import FlexibleGameService from './flexibleGameService';
 import type {
   TradeOffer,
   Resources,
-  Colony,
-  TradeNegotiation,
-  IntelItem,
-  TradeStatus
+  IntelItem
 } from '../types';
-import type { Galaxy, SpecialRule } from '../types/galaxy.types';
+import type { Galaxy } from '../types/galaxy.types';
 import { AuthService } from './authService';
 
 interface GalaxyTradeRestrictions {

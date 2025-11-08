@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Edit2, Save, X, MessageSquare, Info } from 'lucide-react';
 import { GlassPanel } from '../ui/GlassPanel';
 import { Button } from '../ui/Button';
-import type { IntelItem } from '../../types/base.types';
 
 export interface CustomIntelTemplate {
   id: string;

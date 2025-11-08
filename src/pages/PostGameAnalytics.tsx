@@ -8,11 +8,8 @@ import { DataVisualization } from '../components/ui/DataVisualization';
 import { Leaderboard } from '../components/ui/Leaderboard';
 import { ParallaxBackground } from '../components/ui/ParallaxBackground';
 import { cn } from '../utils/cn';
-import type { 
-  GameSession, 
-  Colony, 
-  TradeOffer, 
-  Resources 
+import type {
+  GameSession
 } from '../types/game';
 
 interface AnalyticsData {

@@ -11,7 +11,7 @@ import { GlassPanel } from '../ui/GlassPanel';
 import { AIConfiguration } from './AIConfiguration';
 import type { AIColonyConfig } from '../../types/ai.types';
 import { VictoryConditionSelector } from './VictoryConditionSelector';
-import { VICTORY_CONDITIONS, DEFAULT_VICTORY_CONDITIONS } from '../../constants/victoryConditions';
+import { DEFAULT_VICTORY_CONDITIONS } from '../../constants/victoryConditions';
 
 interface GalaxyConfigurationFormProps {
   onConfigChange: (config: GalaxyConfiguration) => void;

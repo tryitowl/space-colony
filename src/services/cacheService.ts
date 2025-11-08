@@ -377,7 +377,7 @@ export function Cacheable(options?: { ttl?: number; key?: string }) {
  */
 
 export function InvalidateCache(patterns: string[]) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (_target: any, _propertyName: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     const cache = CacheService.getInstance();
 

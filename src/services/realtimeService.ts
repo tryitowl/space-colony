@@ -26,7 +26,7 @@ export class RealtimeService {
     );
   }
 
-  static async updateTeamStatus(sessionId: string, teamId: string, status: any): Promise<void> {
+  static async updateTeamStatus(_sessionId: string, teamId: string, status: any): Promise<void> {
     // Update team status
     await teamDataService.updateTeam(teamId, status);
   }

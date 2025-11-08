@@ -11,10 +11,9 @@ import {
   serverTimestamp,
   off
 } from 'firebase/database';
-import { 
-  doc, 
-  writeBatch,
-  onSnapshot
+import {
+  doc,
+  writeBatch
 } from 'firebase/firestore';
 import { realtimeDb, firestore } from '../firebase/config';
 import type { 
@@ -290,12 +289,12 @@ export class OptimizedPlayerPresenceService {
     );
 
     // Use value events sparingly
-    const unsubscribe = onValue(teamPresenceRef, (snapshot) => {
+    onValue(teamPresenceRef, (snapshot) => {
       if (!snapshot.exists()) return;
 
       const presenceData = snapshot.val();
       const players: PlayerPresence[] = Object.values(presenceData);
-      
+
       const teamPresence: TeamPresence = {
         teamId: this.teamId,
         onlinePlayerCount: players.filter(p => p.isOnline).length,

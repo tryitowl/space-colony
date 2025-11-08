@@ -466,7 +466,7 @@ export class IntelGenerationService {
         }
         
         const fromTeam = fromTeamDoc.data() as Colony;
-        const toTeam = toTeamDoc.data() as Colony;
+        // const __toTeam = toTeamDoc.data() as Colony;
         
         // Collect all intel from source team
         const allSourceIntel = [

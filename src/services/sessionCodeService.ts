@@ -33,8 +33,8 @@ interface CodeGenerationOptions {
 // Constants
 const CODE_EXPIRATION_HOURS = 24;
 const MAX_GENERATION_ATTEMPTS = 100;
-const EVENT_CODE_LENGTH = 4;
-const GALAXY_CODE_LENGTH = 3;
+// const EVENT_CODE_LENGTH = 4;
+// const GALAXY_CODE_LENGTH = 3;
 const CODE_PATTERN = /^[A-Z0-9]{4}-[A-Z0-9]{3}$/;
 
 // Character sets for code generation

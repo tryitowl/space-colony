@@ -9,10 +9,9 @@ import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { InvestmentPanel } from '../components/investment/InvestmentPanel';
 import { GameService } from '../services/GameService';
 import { InvestmentService } from '../services/investmentService';
-import type { 
-  GameSession, 
-  Colony,
-  Investments
+import type {
+  GameSession,
+  Colony
 } from '../types';
 import type { 
   InvestmentAllocation, 

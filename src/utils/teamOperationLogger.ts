@@ -95,7 +95,7 @@ export async function getTeamOperationLogs(
  * Monitor team operations in real-time
  */
 export function monitorTeamOperations(
-  callback: (log: TeamOperationLog) => void
+  _callback: (log: TeamOperationLog) => void
 ): () => void {
   // This would set up a real-time listener on the logs collection
   // Useful for live monitoring dashboards
@@ -111,7 +111,7 @@ export function monitorTeamOperations(
  */
 export async function analyzeTeamOperations(
   sessionId: string,
-  timeWindow: { start: Date; end: Date }
+  _timeWindow: { start: Date; end: Date }
 ): Promise<{
   totalOperations: number;
   successRate: number;

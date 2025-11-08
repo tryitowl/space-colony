@@ -8,7 +8,7 @@ import { Badge } from '../components/ui/Badge';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { ArrowLeft, Users, Activity, TrendingUp, AlertCircle } from 'lucide-react';
 import { GameService } from '../services/GameService';
-import type { GameSession, Colony } from '../types';
+import type { GameSession } from '../types';
 
 const SessionMonitorContent: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();

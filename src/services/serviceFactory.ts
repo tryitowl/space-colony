@@ -9,7 +9,7 @@ import { GameService } from './GameService';
 import FlexibleGameService from './flexibleGameService';
 import { TradingService } from './tradingService';
 import FlexibleTradingService from './flexibleTradingService';
-import { SessionService, sessionService } from './sessionService';
+import { SessionService } from './sessionService';
 import FlexibleSessionService from './flexibleSessionService';
 import { galaxyService } from './galaxyService';
 import { sessionGalaxyService } from './sessionGalaxyService';
@@ -232,7 +232,7 @@ export class ServiceFactory {
     serviceName: T
   ): ServiceInstances[T] {
     return new Proxy({} as any, {
-      get: (target, prop) => {
+      get: (_target, prop) => {
         // Get the current configuration from context or default
         const config = this.getCurrentConfig();
         const services = this.getServices(config);

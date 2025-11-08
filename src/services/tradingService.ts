@@ -10,7 +10,7 @@ import {
   getDoc,
   runTransaction
 } from 'firebase/firestore';
-import { ref, set, onValue, off, get } from 'firebase/database';
+import { ref, set, onValue, off } from 'firebase/database';
 import { firestore, realtimeDb } from '../firebase/config';
 import { AuthService } from './authService';
 import type { TradeOffer, Resources, Colony, TradeNegotiation, IntelItem } from '../types';

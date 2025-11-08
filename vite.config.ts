@@ -38,7 +38,7 @@ export default defineConfig({
           ],
           'game': [
             './src/pages/DashboardPage.tsx',
-            './src/services/gameService.ts',
+            './src/services/GameService.ts',
             './src/services/tradingService.ts'
           ]
         }

@@ -12,9 +12,7 @@ import {
   collection,
   query,
   where,
-  getDocs,
-  orderBy,
-  limit
+  getDocs
 } from 'firebase/firestore';
 import { firestore } from '../firebase/config';
 import { ScoringService } from './scoringService';

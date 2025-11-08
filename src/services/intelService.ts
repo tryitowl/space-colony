@@ -307,7 +307,7 @@ export class IntelService {
   }
 
   // Helper methods
-  private static async getSessionContext(sessionId: string): Promise<any> {
+  private static async getSessionContext(_sessionId: string): Promise<any> {
     // This would fetch session data to contextualize intel
     // For now, return mock data
     return {

@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { firestore as db } from '../firebase/config';
 
 export interface FacilitatorDashboardSettings {

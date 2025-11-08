@@ -21,7 +21,6 @@ import type {
   AIMemory,
   TradeEvaluation,
   AIStrategy,
-  AIDifficulty,
   AITradeHistory
 } from '../types/ai.types';
 import { RESOURCE_CONSUMPTION } from '../types';
@@ -1293,13 +1292,13 @@ export class AIColonyService {
    */
   pauseAll(): void {
     // Clear all decision timers
-    for (const [colonyId, timer] of this.decisionTimers) {
+    for (const [_colonyId, timer] of this.decisionTimers) {
       clearTimeout(timer);
     }
     this.decisionTimers.clear();
-    
+
     // Mark all AI states as paused
-    for (const [colonyId, state] of this.aiStates) {
+    for (const [_colonyId, state] of this.aiStates) {
       state.isPaused = true;
       state.pausedAt = Date.now();
     }
@@ -1380,26 +1379,26 @@ export class AIColonyService {
   /**
    * Get galaxy context for a colony
    */
-  private async getGalaxyContext(
-    galaxyId?: string
+  /* private async _getGalaxyContext(
+    _galaxyId?: string
   ): Promise<{ totalTeams: number; humanTeams: number; aiTeams: number }> {
     try {
       const sessionDoc = await getDoc(doc(firestore, 'sessions', this.sessionId));
       if (!sessionDoc.exists()) {
         return { totalTeams: 6, humanTeams: 4, aiTeams: 2 }; // Default
       }
-      
+
       const session = sessionDoc.data() as GameSession;
-      
+
       // Filter teams by galaxy if galaxyId provided
-      const relevantTeams = galaxyId 
-        ? session.teams.filter(team => team.id.includes(galaxyId) || team.galaxyId === galaxyId)
+      const relevantTeams = _galaxyId
+        ? session.teams.filter(team => team.id.includes(_galaxyId) || team.galaxyId === _galaxyId)
         : session.teams;
-      
-      const aiTeams = relevantTeams.filter(team => 
+
+      const aiTeams = relevantTeams.filter(team =>
         this.aiConfigs.some(config => config.colonyId === team.id)
       ).length;
-      
+
       return {
         totalTeams: relevantTeams.length,
         humanTeams: relevantTeams.length - aiTeams,
@@ -1409,7 +1408,7 @@ export class AIColonyService {
       console.error('Error getting galaxy context:', error);
       return { totalTeams: 6, humanTeams: 4, aiTeams: 2 }; // Default
     }
-  }
+  } */
 
   /**
    * Adjust strategy based on galaxy size
@@ -1507,7 +1506,7 @@ export class AIColonyService {
    */
   private selectBestOpportunityForLargeGalaxy(
     opportunities: any[],
-    galaxyContext?: { totalTeams: number; humanTeams: number; aiTeams: number }
+    _galaxyContext?: { totalTeams: number; humanTeams: number; aiTeams: number }
   ): any {
     // In large galaxies, prioritize efficiency and competition
     const scoredOpportunities = opportunities.map(opp => {
@@ -1577,7 +1576,7 @@ export class AIColonyService {
    */
   private createCooperativeOffer(
     colony: Colony,
-    partner: Colony,
+    _partner: Colony,
     needs: Partial<Resources>
   ): { offer: Partial<Resources>; request: Partial<Resources> } | null {
     const offer: Partial<Resources> = {};
@@ -1611,7 +1610,7 @@ export class AIColonyService {
   /**
    * Estimate partner strength (simplified)
    */
-  private estimatePartnerStrength(partnerId: string): number {
+  private estimatePartnerStrength(_partnerId: string): number {
     // This would analyze partner's resource levels, trading history, etc.
     // For now, return a random estimate
     return Math.random();

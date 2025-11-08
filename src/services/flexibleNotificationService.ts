@@ -18,7 +18,7 @@ import {
   writeBatch,
   Timestamp
 } from 'firebase/firestore';
-import { ref, set, push } from 'firebase/database';
+import { ref, push } from 'firebase/database';
 import { firestore, realtimeDb } from '../firebase/config';
 import { notificationService } from './notificationService';
 import FlexibleGameService from './flexibleGameService';

@@ -1,17 +1,16 @@
-import { 
-  doc, 
-  getDoc, 
-  collection, 
-  addDoc,
-  query,
-  where,
-  getDocs
+import {
+  doc,
+  getDoc,
+  collection,
+  addDoc
+  // query,
+  // where,
+  // getDocs
 } from 'firebase/firestore';
 import { firestore } from '../firebase/config';
-import type { 
-  Resources, 
-  GameSession, 
-  Colony
+import type {
+  Resources,
+  GameSession
 } from '../types/game';
 
 // Market Types
@@ -285,8 +284,8 @@ export class MarketFluctuationService {
    * Calculate trade value adjustment based on market conditions
    */
   calculateTradeValueAdjustment(
-    resourceType: keyof Resources, 
-    amount: number, 
+    resourceType: keyof Resources,
+    _amount: number,
     isSelling: boolean
   ): number {
     if (!this.currentMarketData) return 1.0;
@@ -424,7 +423,7 @@ export class MarketFluctuationService {
     return events;
   }
 
-  private createMarketEvent(type: MarketEventType, round: number): MarketEvent {
+  private createMarketEvent(type: MarketEventType, _round: number): MarketEvent {
     const eventTemplates = {
       resource_shortage: {
         title: "Resource Shortage Alert",

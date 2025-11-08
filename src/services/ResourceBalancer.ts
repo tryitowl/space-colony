@@ -26,9 +26,9 @@ export class ResourceBalancer {
     }
     
     // Calculate average resource value across teams
-    const teamValues = teams.map(team => this.calculateTeamResourceValue(team));
-    const avgValue = teamValues.reduce((sum, val) => sum + val, 0) / teamValues.length;
-    
+    // const teamValues = teams.map(team => this.calculateTeamResourceValue(team));
+    // const avgValue = teamValues.reduce((sum, val) => sum + val, 0) / teamValues.length;
+
     // Return teams as-is for now
     // In a full implementation, this would adjust team resources based on the calculated handicaps
     return teams;

@@ -1,12 +1,11 @@
-import { 
-  doc, 
-  getDoc, 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
   orderBy,
-  limit,
   addDoc,
   serverTimestamp
 } from 'firebase/firestore';
@@ -792,14 +791,14 @@ export class AnalyticsService {
   }
 
   // More helper methods would be implemented here...
-  private calculateResourceUtilization(team: Colony): number { return 0.75; }
-  private calculateTradingEfficiency(trades: TradeOffer[]): number { return 0.82; }
-  private calculateWasteRate(team: Colony): number { return 0.15; }
-  private calculateDecisionSpeed(trades: TradeOffer[]): number { return 95; }
-  private calculateRiskTolerance(trades: TradeOffer[], events: GameEventLog[]): number { return 0.65; }
-  private calculateCooperationIndex(teamId: string, trades: TradeOffer[]): number { return 0.78; }
-  private calculateAdaptability(events: GameEventLog[]): number { return 0.83; }
-  private calculateCommunicationFrequency(trades: TradeOffer[]): number { return 0.71; }
+  private calculateResourceUtilization(_team: Colony): number { return 0.75; }
+  private calculateTradingEfficiency(_trades: TradeOffer[]): number { return 0.82; }
+  private calculateWasteRate(_team: Colony): number { return 0.15; }
+  private calculateDecisionSpeed(_trades: TradeOffer[]): number { return 95; }
+  private calculateRiskTolerance(_trades: TradeOffer[], _events: GameEventLog[]): number { return 0.65; }
+  private calculateCooperationIndex(_teamId: string, _trades: TradeOffer[]): number { return 0.78; }
+  private calculateAdaptability(_events: GameEventLog[]): number { return 0.83; }
+  private calculateCommunicationFrequency(_trades: TradeOffer[]): number { return 0.71; }
   private calculateResourceHoarding(team: Colony): number { 
     // Calculate tendency to hoard resources vs trade them
     const totalResources = Object.values(team.resources)
@@ -830,7 +829,7 @@ export class AnalyticsService {
     // Check for consistent trading patterns
     if (trades.length > 5) {
       const tradesByRound = new Map<number, number>();
-      trades.forEach(trade => {
+      trades.forEach(_trade => {
         // TODO: Calculate round from timestamp or add round field to TradeOffer
         const round = 1;
         tradesByRound.set(round, (tradesByRound.get(round) || 0) + 1);
@@ -895,13 +894,13 @@ export class AnalyticsService {
     return Math.min(1, score);
   }
   
-  private calculateCrisisGains(teamId: string): number {
+  private calculateCrisisGains(_teamId: string): number {
     // Calculate resource gains during crisis periods
     // Simplified implementation
     return 0;
   }
-  
-  private estimateResponseTime(trade: TradeOffer): number {
+
+  private estimateResponseTime(_trade: TradeOffer): number {
     // Estimate response time in seconds (simplified)
     return Math.random() * 180 + 30; // 30-210 seconds
   }
@@ -926,10 +925,10 @@ export class AnalyticsService {
   }
   
   private findTradingClusters(): any[] { return []; }
-  private determineAchievements(team: Colony, trades: TradeOffer[], events: GameEventLog[]): Achievement[] { return []; }
-  private identifyCriticalEvents(teamId: string, events: GameEventLog[]): CriticalEvent[] { return []; }
-  private identifyStrengths(personality: PersonalityType, playStyle: PlayStyle): string[] { return []; }
-  private identifyDevelopmentAreas(personality: PersonalityType, playStyle: PlayStyle): string[] { return []; }
+  private determineAchievements(_team: Colony, _trades: TradeOffer[], _events: GameEventLog[]): Achievement[] { return []; }
+  private identifyCriticalEvents(_teamId: string, _events: GameEventLog[]): CriticalEvent[] { return []; }
+  private identifyStrengths(_personality: PersonalityType, _playStyle: PlayStyle): string[] { return []; }
+  private identifyDevelopmentAreas(_personality: PersonalityType, _playStyle: PlayStyle): string[] { return []; }
 
   /**
    * Identify emergent strategies from team behaviors and outcomes
@@ -938,10 +937,10 @@ export class AnalyticsService {
     if (!sessionData) return [];
     
     const strategies: EmergentStrategy[] = [];
-    const teamStrategies = new Map<string, { teams: Set<string>; effectiveness: number[] }>();
-    
+    // const teamStrategies = new Map<string, { teams: Set<string>; effectiveness: number[] }>();
+
     // Analyze trading patterns for strategies
-    const teamTradingPatterns = this.analyzeTeamTradingPatterns();
+    // const teamTradingPatterns = this.analyzeTeamTradingPatterns();
     
     // Strategy 1: Early Resource Hoarding
     const hoarders = sessionData.teams.filter(team => {
@@ -1170,7 +1169,7 @@ export class AnalyticsService {
    */
   private generateFacilitatorRecommendations(
     teamBehaviors: TeamBehaviorProfile[],
-    interactionPatterns: InteractionPattern[],
+    _interactionPatterns: InteractionPattern[],
     groupDynamics: GroupDynamics
   ): FacilitatorRecommendation[] {
     const recommendations: FacilitatorRecommendation[] = [];
@@ -1303,10 +1302,10 @@ export class AnalyticsService {
   }
 
   // Helper methods for the analytics calculations
-  private analyzeTeamTradingPatterns(): Map<string, any> {
+  /* private _analyzeTeamTradingPatterns(): Map<string, any> {
     // Implementation for analyzing trading patterns
     return new Map();
-  }
+  } */
 
   private calculateStrategyEffectiveness(teams: Colony[]): number {
     // Calculate average final score for teams using this strategy
@@ -1329,7 +1328,7 @@ export class AnalyticsService {
       .map(t => t.id) || [];
   }
 
-  private calculateSpecializationEffectiveness(teamIds: string[]): number {
+  private calculateSpecializationEffectiveness(_teamIds: string[]): number {
     return 0.75; // Simplified
   }
 
@@ -1340,7 +1339,7 @@ export class AnalyticsService {
     return alliances;
   }
 
-  private calculateAllianceEffectiveness(alliances: TeamAlliance[]): number {
+  private calculateAllianceEffectiveness(_alliances: TeamAlliance[]): number {
     return 0.82; // Simplified
   }
 
@@ -1349,11 +1348,11 @@ export class AnalyticsService {
     return [];
   }
 
-  private calculateOpportunismEffectiveness(teamIds: string[]): number {
+  private calculateOpportunismEffectiveness(_teamIds: string[]): number {
     return 0.68; // Simplified
   }
 
-  private calculateBalancedEffectiveness(teams: Colony[]): number {
+  private calculateBalancedEffectiveness(_teams: Colony[]): number {
     return 0.79; // Simplified
   }
 
@@ -1399,7 +1398,7 @@ export class AnalyticsService {
     let totalConnections = 0;
     let possibleConnections = (tradingMatrix.size * (tradingMatrix.size - 1)) / 2;
     
-    tradingMatrix.forEach((partners, teamId) => {
+    tradingMatrix.forEach((partners, _teamId) => {
       totalConnections += partners.size;
     });
     
@@ -1454,7 +1453,7 @@ export class AnalyticsService {
       
       // Find teams with strong mutual trading relationships
       const strongPartners = Array.from(partners.entries())
-        .filter(([partnerId, count]) => count >= 3)
+        .filter(([_partnerId, count]) => count >= 3)
         .map(([partnerId]) => partnerId);
       
       if (strongPartners.length >= 1) {
@@ -1463,8 +1462,8 @@ export class AnalyticsService {
         if (allianceMembers.length >= 2) {
           allianceMembers.forEach(id => processed.add(id));
           
-          const totalTrades = allianceMembers.reduce((sum, id) => {
-            const memberTrades = this.allTrades.filter(t => 
+          const totalTrades = allianceMembers.reduce((sum, _id) => {
+            const memberTrades = this.allTrades.filter(t =>
               allianceMembers.includes(t.initiatorId) && allianceMembers.includes(t.targetId)
             );
             return sum + memberTrades.length;
@@ -1604,11 +1603,11 @@ export class AnalyticsService {
     ).length;
   }
 
-  private calculateInvestmentEffectiveness(team: Colony): number {
+  /* private _calculateInvestmentEffectiveness(_team: Colony): number {
     // Simplified calculation based on investments
-    const investmentCount = Object.keys(team.investments || {}).length;
+    const investmentCount = Object.keys(_team.investments || {}).length;
     return Math.min(1, investmentCount * 0.2);
-  }
+  } */
 
   private calculatePlanningEffectiveness(team: Colony, events: GameEventLog[]): number {
     // Based on how well team avoided crises and maintained resources
@@ -1616,10 +1615,10 @@ export class AnalyticsService {
     const avoidedCrises = crisisEvents.filter(e =>
       !(e.data as any)?.affectedTeams?.includes(team.id)
     ).length;
-    
+
     return crisisEvents.length > 0 ? avoidedCrises / crisisEvents.length : 0.5;
   }
-  private analyzeLeadership(teamId: string, trades: TradeOffer[]): LeadershipProfile { 
+  private analyzeLeadership(_teamId: string, _trades: TradeOffer[]): LeadershipProfile {
     return {
       emergentLeader: false,
       leadershipStyle: 'participative',
@@ -1628,7 +1627,7 @@ export class AnalyticsService {
       conflictResolution: 0
     };
   }
-  private analyzeCollaboration(teamId: string, trades: TradeOffer[]): CollaborationProfile {
+  private analyzeCollaboration(_teamId: string, _trades: TradeOffer[]): CollaborationProfile {
     return {
       preferredPartners: [],
       collaborationFrequency: 0,

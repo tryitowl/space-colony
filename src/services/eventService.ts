@@ -1,12 +1,11 @@
-import { 
-  collection, 
-  query, 
-  where, 
+import {
+  collection,
+  query,
+  where,
   getDocs,
   doc,
   setDoc,
-  getDoc,
-  Timestamp
+  getDoc
 } from 'firebase/firestore';
 import { firestore } from '../firebase/config';
 import type { Event, GalaxyConfiguration, GameEvent } from '../types';

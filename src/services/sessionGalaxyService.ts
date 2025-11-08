@@ -1,6 +1,6 @@
 import {
   doc,
-  setDoc,
+  // setDoc,
   getDoc,
   updateDoc,
   collection,
@@ -8,8 +8,7 @@ import {
   where,
   getDocs,
   writeBatch,
-  Timestamp,
-  runTransaction
+  Timestamp
 } from 'firebase/firestore';
 import { firestore as db } from '../firebase/config';
 import { galaxyService } from './galaxyService';

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Clock, Rocket, AlertCircle } from 'lucide-react';
 import type { GalaxyConfiguration } from '../../../types';
 import { IntelItemCreator } from '../IntelItemCreator';

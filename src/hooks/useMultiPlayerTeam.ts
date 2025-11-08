@@ -19,7 +19,7 @@ import type {
   PlayerPermissions,
   TeamPlayerRole
 } from '../types/player.types';
-import type { TradeOffer, Resources } from '../types';
+import type { Resources } from '../types';
 import { getDefaultPermissions } from '../types/player.types';
 
 interface UseMultiPlayerTeamProps {
