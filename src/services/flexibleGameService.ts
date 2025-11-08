@@ -419,7 +419,7 @@ export class FlexibleGameService extends GameService {
       if (updatedResources.water === 0) criticalResources.push('water');
       if (updatedResources.energy === 0) criticalResources.push('energy');
 
-      let eliminationUpdate: any = {};
+      const eliminationUpdate: any = {};
       if (criticalResources.length > 0) {
         eliminationUpdate.eliminationStatus = {
           roundsInCritical: team.eliminationStatus.roundsInCritical + 1,

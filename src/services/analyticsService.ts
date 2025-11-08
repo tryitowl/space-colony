@@ -618,7 +618,7 @@ export class AnalyticsService {
     if (metrics.length === 0) return 0;
     
     const pathParts = metricPath.split('.');
-    let values: number[] = [];
+    const values: number[] = [];
     
     metrics.forEach(metric => {
       let value: any = metric;
@@ -1396,7 +1396,7 @@ export class AnalyticsService {
     if (tradingMatrix.size === 0) return 0;
     
     let totalConnections = 0;
-    let possibleConnections = (tradingMatrix.size * (tradingMatrix.size - 1)) / 2;
+    const possibleConnections = (tradingMatrix.size * (tradingMatrix.size - 1)) / 2;
     
     tradingMatrix.forEach((partners, _teamId) => {
       totalConnections += partners.size;

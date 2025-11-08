@@ -20,12 +20,19 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Vendor chunks
+          // Core vendor chunks
           'react-vendor': ['react', 'react-dom'],
-          'firebase-vendor': ['firebase/app', 'firebase/firestore', 'firebase/database', 'firebase/auth'],
-          'ui-vendor': ['react-router-dom'],
-          
-          // Feature chunks
+
+          // Split Firebase into separate chunks for better lazy loading
+          'firebase-core': ['firebase/app'],
+          'firebase-firestore': ['firebase/firestore'],
+          'firebase-realtime': ['firebase/database'],
+          'firebase-auth': ['firebase/auth'],
+
+          // UI libraries
+          'ui-vendor': ['react-router-dom', 'framer-motion'],
+
+          // Feature chunks - loaded on demand
           'admin': [
             './src/pages/AdminDashboard.tsx',
             './src/pages/AdminLogin.tsx',
@@ -36,15 +43,25 @@ export default defineConfig({
             './src/pages/TestFacilitator.tsx',
             './src/pages/SimpleFacilitator.tsx'
           ],
-          'game': [
+          'game-core': [
             './src/pages/DashboardPage.tsx',
-            './src/services/GameService.ts',
-            './src/services/tradingService.ts'
+            './src/services/GameService.ts'
+          ],
+          'game-trading': [
+            './src/services/tradingService.ts',
+            './src/services/flexibleTradingService.ts'
+          ],
+          'game-analytics': [
+            './src/services/analyticsService.ts',
+            './src/services/analyticsExportService.ts'
           ]
         }
       }
     },
-    chunkSizeWarningLimit: 600
+    chunkSizeWarningLimit: 500,
+    // Optimize build performance
+    target: 'es2020',
+    minify: 'esbuild'
   },
   define: {
     // Replace process.env with import.meta.env for Vite

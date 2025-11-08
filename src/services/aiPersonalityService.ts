@@ -577,7 +577,7 @@ _galaxyContext?: { totalTeams: number; galaxyTheme?: string }
       trade_hub: ['credits', 'alienTech', 'techPatents']
     };
     
-    let preferred = [...basePreferences[colonyType]];
+    const preferred = [...basePreferences[colonyType]];
     
     // Modify based on traits
     if (traits.resourceStrategy === 'hoarder') {

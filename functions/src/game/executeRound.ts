@@ -72,15 +72,15 @@ export async function executeRound(data: {
     
     const batch = db.batch();
     const eliminatedTeams: string[] = [];
-    let totalResourcesConsumed = { ...RESOURCE_CONSUMPTION };
-    let totalResourcesGenerated: Partial<Resources> = {};
+    const totalResourcesConsumed = { ...RESOURCE_CONSUMPTION };
+    const totalResourcesGenerated: Partial<Resources> = {};
     
     // Process each team
     for (const team of teams) {
       if (team.isEliminated) continue;
       
       const teamRef = db.doc(`events/${eventId}/sessions/${sessionId}/teams/${team.id}`);
-      let updatedResources = { ...team.resources };
+      const updatedResources = { ...team.resources };
       let criticalModeRounds = team.criticalModeRounds || 0;
       let isEliminated = false;
       
